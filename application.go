@@ -26,7 +26,7 @@ var username string = os.Getenv("MAGNETIS_USER")
 var password string = os.Getenv("MAGNETIS_PASS")
 
 type Equity struct {
-	Time  float64
+	Time  int64
 	Value string
 }
 
@@ -72,10 +72,10 @@ func main() {
 
 	equityCurve := new(EquityCurve)
 	for i := range curve {
-		equity := Equity{Time: curve[i][0].(float64), Value: curve[i][1].(string)}
+		equityTime := int64(curve[i][0].(float64)) / 1000
+		equity := Equity{Time: equityTime, Value: curve[i][1].(string)}
 		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
-
 	sort.Sort(equityCurve)
 	fmt.Println(equityCurve)
 }
