@@ -76,8 +76,8 @@ func main() {
 
 	equityCurve := new(EquityCurve)
 	for i := range curve {
-		equityTime := int64(curve[i][0].(float64) / 1000)
-		equity := Equity{Time: time.Unix(equityTime, 0).UTC(), Value: curve[i][1].(string)}
+		equityTime := int64(curve[i][0].(float64)) / 1000
+		equity := Equity{Time: time.Unix(equityTime, 0), Value: curve[i][1].(string)}
 		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
 	sort.Sort(equityCurve)
