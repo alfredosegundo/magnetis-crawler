@@ -16,6 +16,8 @@ import (
 
 	"sort"
 
+	"time"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -26,7 +28,7 @@ var username string = os.Getenv("MAGNETIS_USER")
 var password string = os.Getenv("MAGNETIS_PASS")
 
 type Equity struct {
-	Time  int64
+	Time  time.Time
 	Value string
 }
 
@@ -34,9 +36,11 @@ type EquityCurve struct {
 	Equities []Equity
 }
 
-func (e EquityCurve) Len() int           { return len(e.Equities) }
-func (e EquityCurve) Swap(i, j int)      { e.Equities[i], e.Equities[j] = e.Equities[j], e.Equities[i] }
-func (e EquityCurve) Less(i, j int) bool { return e.Equities[i].Time < e.Equities[j].Time }
+func (e EquityCurve) Len() int      { return len(e.Equities) }
+func (e EquityCurve) Swap(i, j int) { e.Equities[i], e.Equities[j] = e.Equities[j], e.Equities[i] }
+func (e EquityCurve) Less(i, j int) bool {
+	return e.Equities[i].Time.Before(e.Equities[j].Time)
+}
 
 func main() {
 	cookieJar, _ := cookiejar.New(nil)
@@ -73,7 +77,7 @@ func main() {
 	equityCurve := new(EquityCurve)
 	for i := range curve {
 		equityTime := int64(curve[i][0].(float64)) / 1000
-		equity := Equity{Time: equityTime, Value: curve[i][1].(string)}
+		equity := Equity{Time: time.Unix(equityTime, 0), Value: curve[i][1].(string)}
 		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
 	sort.Sort(equityCurve)
