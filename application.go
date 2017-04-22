@@ -67,7 +67,6 @@ func main() {
 
 	err = json.Unmarshal(body, &curve)
 	if err != nil {
-		fmt.Println(string(body))
 		log.Fatal(err)
 	}
 
