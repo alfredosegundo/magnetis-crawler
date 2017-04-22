@@ -72,8 +72,7 @@ func main() {
 
 	equityCurve := new(EquityCurve)
 	for i := range curve {
-		value := curve[i][1]
-		equity := Equity{Time: curve[i][0].(float64), Value: value.(string)}
+		equity := Equity{Time: curve[i][0].(float64), Value: curve[i][1].(string)}
 		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
 
