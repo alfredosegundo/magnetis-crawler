@@ -31,12 +31,12 @@ type Equity struct {
 }
 
 type EquityCurve struct {
-	Curve []Equity
+	Equities []Equity
 }
 
-func (e EquityCurve) Len() int           { return len(e.Curve) }
-func (e EquityCurve) Swap(i, j int)      { e.Curve[i], e.Curve[j] = e.Curve[j], e.Curve[i] }
-func (e EquityCurve) Less(i, j int) bool { return e.Curve[i].Time < e.Curve[j].Time }
+func (e EquityCurve) Len() int           { return len(e.Equities) }
+func (e EquityCurve) Swap(i, j int)      { e.Equities[i], e.Equities[j] = e.Equities[j], e.Equities[i] }
+func (e EquityCurve) Less(i, j int) bool { return e.Equities[i].Time < e.Equities[j].Time }
 
 func main() {
 	cookieJar, _ := cookiejar.New(nil)
@@ -74,7 +74,7 @@ func main() {
 	for i := range curve {
 		value := curve[i][1]
 		equity := Equity{Time: curve[i][0].(float64), Value: value.(string)}
-		equityCurve.Curve = append(equityCurve.Curve, equity)
+		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
 
 	sort.Sort(equityCurve)
