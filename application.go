@@ -28,6 +28,7 @@ var password string = os.Getenv("MAGNETIS_PASS")
 var host string = "https://magnetis.com.br"
 var signin string = host + "/users/sign_in"
 var equityCurve string = host + "/pricing/api/portfolio/" + userId + "/equity_curve"
+var plan string = host + "/api/investment_plan/" + userId
 
 type Equity struct {
 	Time  time.Time
@@ -42,6 +43,19 @@ func (e EquityCurve) Len() int      { return len(e.Equities) }
 func (e EquityCurve) Swap(i, j int) { e.Equities[i], e.Equities[j] = e.Equities[j], e.Equities[i] }
 func (e EquityCurve) Less(i, j int) bool {
 	return e.Equities[i].Time.Before(e.Equities[j].Time)
+}
+
+type InvestmentPlan struct {
+	Age               int `json:"age"`
+	Experience        string `json:"experience"`
+	Goal              string `json:"experience"`
+	GoalValue         float32 `json:"goal_value"`
+	InitialInvestment float32 `json:"initial_investment"`
+	LossTolerance     string `json:"loss_tolerance"`
+	MonthlyInvestment float32 `json:"monthly_investment"`
+	PeriodInYears     int `json:"period_in_years"`
+	RiskLevel         int `json:"risk_level"`
+	RiskProfile       string `json:"risk_profile"`
 }
 
 func main() {
@@ -88,4 +102,15 @@ func main() {
 	for i := range equities {
 		fmt.Println(equities[i])
 	}
+
+	resp, err = client.Get(plan)
+
+	investment := new(InvestmentPlan)
+	body, err = ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(body, &investment)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(investment)
 }
