@@ -21,11 +21,13 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var host string = "https://magnetis.com.br"
-var signin string = host + "/users/sign_in"
-var equityCurve string = host + "/pricing/api/portfolio/20146/equity_curve"
+var userId string = os.Getenv("MAGNETIS_USER_ID")
 var username string = os.Getenv("MAGNETIS_USER")
 var password string = os.Getenv("MAGNETIS_PASS")
+
+var host string = "https://magnetis.com.br"
+var signin string = host + "/users/sign_in"
+var equityCurve string = host + "/pricing/api/portfolio/" + userId + "/equity_curve"
 
 type Equity struct {
 	Time  time.Time
@@ -77,9 +79,13 @@ func main() {
 	equityCurve := new(EquityCurve)
 	for i := range curve {
 		equityTime := int64(curve[i][0].(float64)) / 1000
-		equity := Equity{Time: time.Unix(equityTime, 0), Value: curve[i][1].(string)}
+		equity := Equity{Time: time.Unix(equityTime, 0).UTC(), Value: curve[i][1].(string)}
 		equityCurve.Equities = append(equityCurve.Equities, equity)
 	}
 	sort.Sort(equityCurve)
-	fmt.Println(equityCurve)
+
+	equities := equityCurve.Equities
+	for i := range equities {
+		fmt.Println(equities[i])
+	}
 }
