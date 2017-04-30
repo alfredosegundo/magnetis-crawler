@@ -2,3 +2,5 @@
 
 *.iml
 *.html
+
+client_secret.json
