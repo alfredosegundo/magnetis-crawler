@@ -14,7 +14,6 @@ import (
 )
 
 var host string = "https://magnetis.com.br"
-var signin string = host + "/users/sign_in"
 
 type Equity struct {
 	Time  time.Time
@@ -32,9 +31,9 @@ func (e EquityCurve) Less(i, j int) bool {
 }
 
 type InvestmentPlan struct {
-	Age               int     `json:"age"`
-	Experience        string  `json:"experience"`
-	Goal              string  `json:"experience"`
+	Age               int
+	Experience        string
+	Goal              string
 	GoalValue         float32 `json:"goal_value"`
 	InitialInvestment float32 `json:"initial_investment"`
 	LossTolerance     string  `json:"loss_tolerance"`
@@ -42,6 +41,19 @@ type InvestmentPlan struct {
 	PeriodInYears     int     `json:"period_in_years"`
 	RiskLevel         int     `json:"risk_level"`
 	RiskProfile       string  `json:"risk_profile"`
+}
+
+type Asset struct {
+	Amount             string
+	AssetId            int    `json:"asset_id"`
+	AssetReturn        string `json:"asset_return"`
+	CategoryKey        string `json:"category_key"`
+	InstrumentTypeName string `json:"instrument_type_name"`
+	Issuer             string
+	Liquidity          int
+	MaturityDate       string `json:"maturity_date"`
+	Name               string
+	Yield              string
 }
 
 var jar, _ = cookiejar.New(nil)
@@ -64,19 +76,20 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 
 	err = json.Unmarshal(body, &icurve)
 	if err != nil {
-		return nil, err
+		return
 	}
-	equityCurve := new(EquityCurve)
+	curve = new(EquityCurve)
 	for i := range icurve {
 		equityTime := int64(icurve[i][0].(float64)) / 1000
 		equity := Equity{Time: time.Unix(equityTime, 0).UTC(), Value: icurve[i][1].(string)}
-		equityCurve.Equities = append(equityCurve.Equities, equity)
+		curve.Equities = append(curve.Equities, equity)
 	}
-	sort.Sort(equityCurve)
-	return equityCurve, nil
+	sort.Sort(curve)
+	return
 }
 
 func Signin(username string, password string) (err error) {
+	var signin = host + "/users/sign_in"
 	res, err := defaultClient.Get(signin)
 	if err != nil {
 		return err
@@ -96,18 +109,37 @@ func Signin(username string, password string) (err error) {
 	return err
 }
 
-func GetInvestmentPlan(userId string) (investmentPlan *InvestmentPlan, err error) {
+func GetInvestmentPlan(userId string) (plan *InvestmentPlan, err error) {
 	resp, err := defaultClient.Get(host + "/api/investment_plan/" + userId)
 	if err != nil {
 		return nil, err
 	}
 
-	investment := new(InvestmentPlan)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &investment)
-	return investment, err
+	err = json.Unmarshal(body, &plan)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func Assets(userId string) (assets []Asset, err error) {
+	resp, err := defaultClient.Get(host + "/user_portfolio/api/portfolios/" + userId + "/assets")
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &assets)
+	if err != nil {
+		return nil, err
+	}
+	return
 }

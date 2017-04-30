@@ -34,4 +34,13 @@ func main() {
 	}
 
 	fmt.Println(plan)
+
+	assets, err := magnetis.Assets(userId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i := range assets {
+		fmt.Printf("%#v\n", assets[i])
+	}
 }
