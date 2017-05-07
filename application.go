@@ -25,15 +25,23 @@ func main() {
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:        "save, s",
-			Usage:       "if we should save on drive",
-			Destination: &shouldSave,
+		cli.StringFlag{
+			Name:        "userId, U",
+			Usage:       "Your user id on magnetis api",
+			Destination: &userId,
+			EnvVar:      "MAGNETIS_USER_ID",
 		},
-		cli.BoolFlag{
-			Name:        "print, p",
-			Usage:       "Print on the console",
-			Destination: &shouldPrint,
+		cli.StringFlag{
+			Name:        "username, u",
+			Usage:       "Your username on magnetis website",
+			Destination: &username,
+			EnvVar:      "MAGNETIS_USER",
+		},
+		cli.StringFlag{
+			Name:        "password, p",
+			Usage:       "Your password on magnetis api",
+			Destination: &password,
+			EnvVar:      "MAGNETIS_PASS",
 		},
 	}
 
@@ -42,6 +50,18 @@ func main() {
 			Name:    "curve",
 			Aliases: []string{"c"},
 			Usage:   "Get your equity curve from magnetis api",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "save, s",
+					Usage:       "if we should save on drive",
+					Destination: &shouldSave,
+				},
+				cli.BoolFlag{
+					Name:        "print, p",
+					Usage:       "Print on the console",
+					Destination: &shouldPrint,
+				},
+			},
 			Action: func(c *cli.Context) error {
 				err := magnetis.Signin(username, password)
 				if err != nil {
@@ -68,6 +88,18 @@ func main() {
 		{
 			Name:  "plan",
 			Usage: "Get your investment plan from magnetis api",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "save, s",
+					Usage:       "if we should save on drive",
+					Destination: &shouldSave,
+				},
+				cli.BoolFlag{
+					Name:        "print, p",
+					Usage:       "Print on the console",
+					Destination: &shouldPrint,
+				},
+			},
 			Action: func(c *cli.Context) error {
 				err := magnetis.Signin(username, password)
 				if err != nil {
@@ -90,6 +122,18 @@ func main() {
 			Name:    "assets",
 			Aliases: []string{"a"},
 			Usage:   "Get your assets from magnetis api",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "save, s",
+					Usage:       "if we should save on drive",
+					Destination: &shouldSave,
+				},
+				cli.BoolFlag{
+					Name:        "print, p",
+					Usage:       "Print on the console",
+					Destination: &shouldPrint,
+				},
+			},
 			Action: func(c *cli.Context) error {
 				err := magnetis.Signin(username, password)
 				if err != nil {
