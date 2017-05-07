@@ -12,13 +12,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-var userId string = os.Getenv("MAGNETIS_USER_ID")
-var username string = os.Getenv("MAGNETIS_USER")
-var password string = os.Getenv("MAGNETIS_PASS")
-
 func main() {
+	var userId string
+	var username string
+	var password string
 	var shouldSave bool
 	var shouldPrint bool
+
 	app := cli.NewApp()
 	app.Name = "Magnetis Crawler"
 	app.Usage = "Get my data form magnetis website"
