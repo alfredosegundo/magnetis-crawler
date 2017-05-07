@@ -86,8 +86,9 @@ func main() {
 			},
 		},
 		{
-			Name:  "plan",
-			Usage: "Get your investment plan from magnetis api",
+			Name:    "plan",
+			Aliases: []string{"p"},
+			Usage:   "Get your investment plan from magnetis api",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:        "save, s",
