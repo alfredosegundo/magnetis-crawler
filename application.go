@@ -7,6 +7,8 @@ import (
 	"MagnetisCrawler/magnetis"
 	"os"
 
+	"MagnetisCrawler/spreadsheet"
+
 	"github.com/urfave/cli"
 )
 
@@ -57,7 +59,8 @@ func main() {
 					}
 				}
 				if shouldSave {
-					log.Fatal("Not implemented yet")
+					spreadsheet.Signin()
+					spreadsheet.UpdateEquityCurve(curve)
 				}
 				return nil
 			},
