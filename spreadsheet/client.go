@@ -17,10 +17,6 @@ import (
 
 	"os/user"
 
-	"strconv"
-
-	"time"
-
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -144,17 +140,12 @@ func createRow(equity magnetis.Equity) *sheets.RowData {
 			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
 		UserEnteredValue: &sheets.ExtendedValue{
 			FormulaValue: "=" + equity.Value}}
-	dateFormula := createDateFormula(equity.Time)
 	timeCellData := sheets.CellData{
 		UserEnteredFormat: &sheets.CellFormat{
 			NumberFormat: &sheets.NumberFormat{
 				Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
 		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: dateFormula}}
+			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day())}}
 	row := &sheets.RowData{Values: []*sheets.CellData{&timeCellData, &valueCellData}}
 	return row
-}
-func createDateFormula(time time.Time) string {
-	dateFormula := "=DATE(" + strconv.FormatInt(int64(time.Year()), 10) + "," + strconv.FormatInt(int64(time.Month()), 10) + "," + strconv.FormatInt(int64(time.Day()), 10) + ")"
-	return dateFormula
 }
