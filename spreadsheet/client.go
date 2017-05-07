@@ -1,10 +1,11 @@
 package spreadsheet
 
 import (
-	"MagnetisCrawler/magnetis"
 	"fmt"
 	"io/ioutil"
 	"log"
+
+	"github.com/alfredosegundo/magnetis-crawler/magnetis"
 
 	"net/http"
 

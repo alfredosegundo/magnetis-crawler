@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"MagnetisCrawler/magnetis"
-	"os"
+	"github.com/alfredosegundo/magnetis-crawler/magnetis"
+	"github.com/alfredosegundo/magnetis-crawler/spreadsheet"
 
-	"MagnetisCrawler/spreadsheet"
+	"os"
 
 	"github.com/urfave/cli"
 )
