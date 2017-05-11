@@ -134,12 +134,13 @@ func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
 	}
 	return
 }
+
 func createRow(equity magnetis.Equity) *sheets.RowData {
 	valueCellData := sheets.CellData{
 		UserEnteredFormat: &sheets.CellFormat{
 			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
 		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: "=" + equity.Value}}
+			FormulaValue: fmt.Sprintf("=%v", equity.Value)}}
 	timeCellData := sheets.CellData{
 		UserEnteredFormat: &sheets.CellFormat{
 			NumberFormat: &sheets.NumberFormat{
