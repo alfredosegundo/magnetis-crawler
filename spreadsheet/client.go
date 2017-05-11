@@ -147,6 +147,5 @@ func createRow(equity magnetis.Equity) *sheets.RowData {
 				Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
 		UserEnteredValue: &sheets.ExtendedValue{
 			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day())}}
-	row := &sheets.RowData{Values: []*sheets.CellData{&timeCellData, &valueCellData}}
-	return row
+	return &sheets.RowData{Values: []*sheets.CellData{&timeCellData, &valueCellData}}
 }
