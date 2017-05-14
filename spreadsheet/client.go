@@ -18,6 +18,8 @@ import (
 
 	"os/user"
 
+	"time"
+
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -107,10 +109,6 @@ func Signin() {
 }
 
 func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
-	service, err := sheets.New(client)
-	if err != nil {
-		log.Fatalf("Unable to retrieve Sheets Client %v", err)
-	}
 
 	equities := curve.Equities
 	rowData := make([]*sheets.RowData, len(equities))
@@ -123,11 +121,14 @@ func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
 		}
 		rowData = append(rowData, createRow(equities[i]))
 	}
-	data := sheets.GridData{RowData: rowData}
-	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{&data}, Properties: &sheets.SheetProperties{Title: "EquityCurve"}}
+	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "EquityCurve"}}
 	rb := &sheets.Spreadsheet{
 		Sheets:     []*sheets.Sheet{equitySheet},
 		Properties: &sheets.SpreadsheetProperties{Title: "Planejamento"},
+	}
+	service, err := sheets.New(client)
+	if err != nil {
+		log.Fatalf("Unable to retrieve Sheets Client %v", err)
 	}
 	_, err = service.Spreadsheets.Create(rb).Context(ctx).Do()
 	if err != nil {
@@ -142,15 +143,69 @@ func createRow(equity magnetis.Equity) *sheets.RowData {
 			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
 		UserEnteredValue: &sheets.ExtendedValue{
 			FormulaValue: fmt.Sprintf("=%v", equity.Value)}}
-	timeCellData := sheets.CellData{
+	return &sheets.RowData{Values: []*sheets.CellData{
+		createDateCell(equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
+		&valueCellData}}
+}
+
+func UpdateApplications(applications []magnetis.Application) (err error) {
+	service, err := sheets.New(client)
+	if err != nil {
+		log.Fatalf("Unable to retrieve Sheets Client %v", err)
+	}
+	rowData := make([]*sheets.RowData, len(applications))
+	rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Data"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Tipo da transação"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Investimento"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Quantidade"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Preço (R$)"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "IR (R$)"}},
+		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Total Líquido (R$)"}},
+	}})
+	for i := range applications {
+		application := applications[i]
+		rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
+			createDateCell(application.Date.Year(), application.Date.Month(), application.Date.Day()),
+			createStringCell(application.Type.String()),
+			createStringCell(application.Investment),
+			createMoneyCell(application.Quantity),
+			createMoneyCell(application.Price),
+			createMoneyCell(application.IR),
+			createMoneyCell(application.Net)}})
+	}
+	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "History"}}
+	rb := &sheets.Spreadsheet{
+		Sheets:     []*sheets.Sheet{equitySheet},
+		Properties: &sheets.SpreadsheetProperties{Title: "Planejamento"},
+	}
+	_, err = service.Spreadsheets.Create(rb).Context(ctx).Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve data from sheet. %v", err)
+	}
+	return
+}
+
+func createDateCell(year int, month time.Month, day int) *sheets.CellData {
+	return &sheets.CellData{
 		UserEnteredFormat: &sheets.CellFormat{
 			NumberFormat: &sheets.NumberFormat{
 				Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
 		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day())}}
-	return &sheets.RowData{Values: []*sheets.CellData{&timeCellData, &valueCellData}}
+			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", year, month, day)}}
 }
 
-func UpdateApplications(applications []magnetis.Application) (err error) {
-	return
+func createStringCell(stringValue string) *sheets.CellData {
+	return &sheets.CellData{
+		UserEnteredValue: &sheets.ExtendedValue{
+			StringValue: stringValue},
+	}
+}
+
+func createMoneyCell(value float64) *sheets.CellData {
+	return &sheets.CellData{
+		UserEnteredFormat: &sheets.CellFormat{
+			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
+		UserEnteredValue: &sheets.ExtendedValue{
+			FormulaValue: fmt.Sprintf("=%v", value)}}
 }

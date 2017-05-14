@@ -82,7 +82,7 @@ var transactionTypes = [...]string{
 	"IRWithdrawal",
 }
 
-func (d TransactionType) String() string { return transactionTypes[d] }
+func (t TransactionType) String() string { return transactionTypes[t] }
 
 var jar, _ = cookiejar.New(nil)
 var defaultClient = &http.Client{
