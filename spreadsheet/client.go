@@ -1,3 +1,4 @@
+// Package spreadsheet provides an client to interact with google drive spreadsheets
 package spreadsheet
 
 import (
