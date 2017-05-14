@@ -181,7 +181,9 @@ func main() {
 					log.Fatal(err)
 				}
 				if shouldPrint {
-					fmt.Println(applications)
+					for i := range applications {
+						fmt.Println(applications[i])
+					}
 				}
 				if shouldSave {
 					spreadsheet.Signin()

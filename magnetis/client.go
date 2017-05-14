@@ -10,6 +10,10 @@ import (
 
 	"net/url"
 
+	"strings"
+
+	"strconv"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -59,10 +63,10 @@ type Asset struct {
 type Application struct {
 	Date       time.Time
 	Investment string
-	Quantity   string
-	Price      string
-	IR         string
-	Net        string
+	Quantity   float64
+	Price      float64
+	IR         float64
+	Net        float64
 }
 
 var jar, _ = cookiejar.New(nil)
@@ -174,12 +178,16 @@ func Applications() (applications []Application, err error) {
 			}
 			anTransaction.Date = investmentDate
 			anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
-			anTransaction.Quantity = investmentRow.Find("td:nth-child(3)").Text()
-			anTransaction.Price = investmentRow.Find("td:nth-child(4)").Text()
-			anTransaction.IR = investmentRow.Find("td:nth-child(5)").Text()
-			anTransaction.Net = investmentRow.Find("td:nth-child(6)").Text()
+			anTransaction.Quantity = convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text())
+			anTransaction.Price = convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text())
+			anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
+			anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
 			applications = append(applications, anTransaction)
 		}
 	}
 	return applications, nil
+}
+func convertPtToEnNumber(investmentValue string) float64 {
+	value, _ := strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(investmentValue, ".", "", -1), ",", ".", -1)), 64)
+	return value
 }
