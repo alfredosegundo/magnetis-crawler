@@ -150,3 +150,7 @@ func createRow(equity magnetis.Equity) *sheets.RowData {
 			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day())}}
 	return &sheets.RowData{Values: []*sheets.CellData{&timeCellData, &valueCellData}}
 }
+
+func UpdateApplications(applications []magnetis.Application) (err error) {
+	return
+}

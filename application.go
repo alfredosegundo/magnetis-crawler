@@ -155,6 +155,44 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:    "applications",
+			Aliases: []string{"ap"},
+			Usage:   "Get your application history from magnetis website",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "save, s",
+					Usage:       "if we should save on drive",
+					Destination: &shouldSave,
+				},
+				cli.BoolFlag{
+					Name:        "print, p",
+					Usage:       "Print on the console",
+					Destination: &shouldPrint,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				err := magnetis.Signin(username, password)
+				if err != nil {
+					log.Fatal(err)
+				}
+				applications, err := magnetis.Applications()
+				if err != nil {
+					log.Fatal(err)
+				}
+				if shouldPrint {
+					fmt.Println(applications)
+				}
+				if shouldSave {
+					spreadsheet.Signin()
+					err = spreadsheet.UpdateApplications(applications)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				return nil
+			},
+		},
 	}
 	app.Run(os.Args)
 }

@@ -56,6 +56,15 @@ type Asset struct {
 	Yield              string
 }
 
+type Application struct {
+	Date       time.Time
+	Investment string
+	Quantity   string
+	Price      string
+	IR         string
+	Net        string
+}
+
 var jar, _ = cookiejar.New(nil)
 var defaultClient = &http.Client{
 	Jar: jar,
@@ -142,4 +151,35 @@ func Assets(userId string) (assets []Asset, err error) {
 		return nil, err
 	}
 	return
+}
+
+func Applications() (applications []Application, err error) {
+	res, err := defaultClient.Get(host + "/movimentacoes")
+	if err != nil {
+		return nil, err
+	}
+	doc, err := goquery.NewDocumentFromResponse(res)
+	if err != nil {
+		return nil, err
+	}
+	rows := doc.Find("section.transactions table tr[class^='journal-summary__asset-trade']")
+	for i := range rows.Nodes {
+		anTransaction := Application{}
+		investmentRow := rows.Eq(i)
+		val, exists := investmentRow.Find("time").Attr("datetime")
+		if exists {
+			investmentDate, err := time.Parse("2006-01-02", val)
+			if err != nil {
+				return nil, err
+			}
+			anTransaction.Date = investmentDate
+			anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
+			anTransaction.Quantity = investmentRow.Find("td:nth-child(3)").Text()
+			anTransaction.Price = investmentRow.Find("td:nth-child(4)").Text()
+			anTransaction.IR = investmentRow.Find("td:nth-child(5)").Text()
+			anTransaction.Net = investmentRow.Find("td:nth-child(6)").Text()
+			applications = append(applications, anTransaction)
+		}
+	}
+	return applications, nil
 }
