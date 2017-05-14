@@ -60,14 +60,29 @@ type Asset struct {
 	Yield              string
 }
 
+type TransactionType int
+
+const (
+	MoneyApplication TransactionType = iota
+	IRWithdrawal
+)
+
 type Application struct {
 	Date       time.Time
+	Type       TransactionType
 	Investment string
 	Quantity   float64
 	Price      float64
 	IR         float64
 	Net        float64
 }
+
+var transactionTypes = [...]string{
+	"Application",
+	"IRWithdrawal",
+}
+
+func (d TransactionType) String() string { return transactionTypes[d] }
 
 var jar, _ = cookiejar.New(nil)
 var defaultClient = &http.Client{
@@ -182,6 +197,13 @@ func Applications() (applications []Application, err error) {
 			anTransaction.Price = convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text())
 			anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
 			anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
+			if len(investmentRow.Find("span.color-additional-investment").Nodes) > 0 {
+				anTransaction.Type = MoneyApplication
+			}
+			if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
+				anTransaction.Type = IRWithdrawal
+			}
+
 			applications = append(applications, anTransaction)
 		}
 	}
