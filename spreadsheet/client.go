@@ -119,7 +119,10 @@ func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
 		if err != nil {
 			log.Println(err)
 		}
-		rowData = append(rowData, createRow(equities[i]))
+		equity := equities[i]
+		rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
+			createDateCell(equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
+			createStringMoneyCell(equity.Value)}})
 	}
 	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "EquityCurve"}}
 	rb := &sheets.Spreadsheet{
@@ -135,17 +138,6 @@ func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
 		log.Fatalf("Unable to retrieve data from sheet. %v", err)
 	}
 	return
-}
-
-func createRow(equity magnetis.Equity) *sheets.RowData {
-	valueCellData := sheets.CellData{
-		UserEnteredFormat: &sheets.CellFormat{
-			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
-		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: fmt.Sprintf("=%v", equity.Value)}}
-	return &sheets.RowData{Values: []*sheets.CellData{
-		createDateCell(equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
-		&valueCellData}}
 }
 
 func UpdateApplications(applications []magnetis.Application) (err error) {
@@ -169,10 +161,10 @@ func UpdateApplications(applications []magnetis.Application) (err error) {
 			createDateCell(application.Date.Year(), application.Date.Month(), application.Date.Day()),
 			createStringCell(application.Type.String()),
 			createStringCell(application.Investment),
-			createMoneyCell(application.Quantity),
-			createMoneyCell(application.Price),
-			createMoneyCell(application.IR),
-			createMoneyCell(application.Net)}})
+			createFloatMoneyCell(application.Quantity),
+			createFloatMoneyCell(application.Price),
+			createFloatMoneyCell(application.IR),
+			createFloatMoneyCell(application.Net)}})
 	}
 	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "History"}}
 	rb := &sheets.Spreadsheet{
@@ -202,10 +194,14 @@ func createStringCell(stringValue string) *sheets.CellData {
 	}
 }
 
-func createMoneyCell(value float64) *sheets.CellData {
+func createFloatMoneyCell(value float64) *sheets.CellData {
+	return createStringMoneyCell(fmt.Sprintf("%f", value))
+}
+
+func createStringMoneyCell(value string) *sheets.CellData {
 	return &sheets.CellData{
 		UserEnteredFormat: &sheets.CellFormat{
 			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
 		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: fmt.Sprintf("=%v", value)}}
+			FormulaValue: fmt.Sprintf("=%s", value)}}
 }
