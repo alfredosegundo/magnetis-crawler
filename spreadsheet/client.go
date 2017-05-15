@@ -180,18 +180,12 @@ func UpdateApplications(applications []magnetis.Application) (err error) {
 
 func createDateCell(year int, month time.Month, day int) *sheets.CellData {
 	return &sheets.CellData{
-		UserEnteredFormat: &sheets.CellFormat{
-			NumberFormat: &sheets.NumberFormat{
-				Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
-		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", year, month, day)}}
+		UserEnteredFormat: &sheets.CellFormat{NumberFormat: &sheets.NumberFormat{Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
+		UserEnteredValue:  &sheets.ExtendedValue{FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", year, month, day)}}
 }
 
 func createStringCell(stringValue string) *sheets.CellData {
-	return &sheets.CellData{
-		UserEnteredValue: &sheets.ExtendedValue{
-			StringValue: stringValue},
-	}
+	return &sheets.CellData{UserEnteredValue: &sheets.ExtendedValue{StringValue: stringValue}}
 }
 
 func createFloatMoneyCell(value float64) *sheets.CellData {
@@ -200,8 +194,6 @@ func createFloatMoneyCell(value float64) *sheets.CellData {
 
 func createStringMoneyCell(value string) *sheets.CellData {
 	return &sheets.CellData{
-		UserEnteredFormat: &sheets.CellFormat{
-			NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
-		UserEnteredValue: &sheets.ExtendedValue{
-			FormulaValue: fmt.Sprintf("=%s", value)}}
+		UserEnteredFormat: &sheets.CellFormat{NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
+		UserEnteredValue:  &sheets.ExtendedValue{FormulaValue: fmt.Sprintf("=%s", value)}}
 }
