@@ -14,6 +14,8 @@ import (
 
 	"strconv"
 
+	"fmt"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -22,6 +24,11 @@ var host string = "https://magnetis.com.br"
 type Equity struct {
 	Time  time.Time
 	Value string
+}
+
+func (e Equity) Excel() string {
+	et := e.Time
+	return fmt.Sprintf("=DATE(%d,%d,%d)\t =%s", et.Year(), et.Month(), et.Day(), e.Value)
 }
 
 type EquityCurve struct {
@@ -67,6 +74,13 @@ const (
 	IRWithdrawal
 )
 
+var transactionTypes = [...]string{
+	"Application",
+	"IRWithdrawal",
+}
+
+func (t TransactionType) String() string { return transactionTypes[t] }
+
 type Application struct {
 	Date       time.Time
 	Type       TransactionType
@@ -76,13 +90,6 @@ type Application struct {
 	IR         float64
 	Net        float64
 }
-
-var transactionTypes = [...]string{
-	"Application",
-	"IRWithdrawal",
-}
-
-func (t TransactionType) String() string { return transactionTypes[t] }
 
 var jar, _ = cookiejar.New(nil)
 var defaultClient = &http.Client{

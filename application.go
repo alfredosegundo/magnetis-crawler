@@ -18,6 +18,7 @@ func main() {
 	var password string
 	var shouldSave bool
 	var shouldPrint bool
+	var shouldPrintExcel bool
 
 	app := cli.NewApp()
 	app.Name = "Magnetis Crawler"
@@ -61,6 +62,11 @@ func main() {
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
+				cli.BoolFlag{
+					Name:        "excel, e",
+					Usage:       "Print on the console as tab separated execel formated values",
+					Destination: &shouldPrintExcel,
+				},
 			},
 			Action: func(c *cli.Context) error {
 				err := magnetis.Signin(username, password)
@@ -76,6 +82,12 @@ func main() {
 					equities := curve.Equities
 					for i := range equities {
 						fmt.Println(equities[i])
+					}
+				}
+				if shouldPrintExcel {
+					equities := curve.Equities
+					for i := range equities {
+						fmt.Println(equities[i].Excel())
 					}
 				}
 				if shouldSave {
