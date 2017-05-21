@@ -28,7 +28,11 @@ type Equity struct {
 
 func (e Equity) Excel() string {
 	et := e.Time
-	return fmt.Sprintf("=DATE(%d,%d,%d)\t =%s", et.Year(), et.Month(), et.Day(), e.Value)
+	return fmt.Sprintf("=DATE(%d,%d,%d)\t=%s", et.Year(), et.Month(), et.Day(), e.Value)
+}
+
+func (e Equity) String() string {
+	return fmt.Sprintf("%v\t%s", e.Time, e.Value)
 }
 
 type EquityCurve struct {
@@ -89,6 +93,14 @@ type Application struct {
 	Price      float64
 	IR         float64
 	Net        float64
+}
+
+func (a Application) String() string {
+	return fmt.Sprintf("%v\t%s\t%s\t%f\t%f\t%f\t%f", a.Date, a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
+}
+
+func (a Application) Excel() string {
+	return fmt.Sprintf("=DATE(%d,%d,%d)\t%s\t%s\t=%f\t=%f\t=%f\t=%f", a.Date.Year(), a.Date.Month(), a.Date.Day(), a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
 }
 
 var jar, _ = cookiejar.New(nil)
@@ -209,6 +221,7 @@ func Applications() (applications []Application, err error) {
 			}
 			if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
 				anTransaction.Type = IRWithdrawal
+				anTransaction.Net = -anTransaction.Net
 			}
 
 			applications = append(applications, anTransaction)

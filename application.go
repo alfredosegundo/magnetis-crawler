@@ -182,6 +182,11 @@ func main() {
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
+				cli.BoolFlag{
+					Name:        "excel, e",
+					Usage:       "Print on the console as tab separated execel formated values",
+					Destination: &shouldPrintExcel,
+				},
 			},
 			Action: func(c *cli.Context) error {
 				err := magnetis.Signin(username, password)
@@ -195,6 +200,11 @@ func main() {
 				if shouldPrint {
 					for i := range applications {
 						fmt.Println(applications[i])
+					}
+				}
+				if shouldPrintExcel {
+					for i := range applications {
+						fmt.Println(applications[i].Excel())
 					}
 				}
 				if shouldSave {
