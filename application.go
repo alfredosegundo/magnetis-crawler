@@ -99,7 +99,10 @@ func main() {
 				}
 				if shouldSave {
 					spreadsheet.Signin()
-					spreadsheet.UpdateEquityCurve(curve, spreadsheetId)
+					err = spreadsheet.UpdateEquityCurve(curve.Equities, spreadsheetId)
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 				return nil
 			},
@@ -216,7 +219,7 @@ func main() {
 				}
 				if shouldSave {
 					spreadsheet.Signin()
-					err = spreadsheet.UpdateApplications(applications)
+					err = spreadsheet.UpdateApplications(applications, spreadsheetId)
 					if err != nil {
 						log.Fatal(err)
 					}

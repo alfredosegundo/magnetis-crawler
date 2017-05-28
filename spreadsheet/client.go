@@ -18,8 +18,6 @@ import (
 
 	"os/user"
 
-	"time"
-
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -108,85 +106,49 @@ func Signin() {
 	client = getClient(ctx, config)
 }
 
-func UpdateEquityCurve(curve *magnetis.EquityCurve, spreadsheetId string) (err error) {
-	rowsCount := len(curve.Equities) + 1
+func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err error) {
+	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data", "Saldo Atual")
-
-	equities := curve.Equities
 	for i := range equities {
 		equity := equities[i]
 		v[i+1] = append(v[i+1],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
 			fmt.Sprintf("=%s", equity.Value))
 	}
-	service, err := sheets.New(client)
-	if err != nil {
-		return err
-	}
-	rb := &sheets.ValueRange{Values: v, MajorDimension: "ROWS"}
-
-	_, err = service.Spreadsheets.Values.Update(spreadsheetId, fmt.Sprintf("Rendimento!A1:B%v", rowsCount), rb).ValueInputOption("USER_ENTERED").Context(ctx).Do()
-	if err != nil {
-		return err
-	}
-	return
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:B%v", rowsCount))
 }
 
-func UpdateApplications(applications []magnetis.Application) (err error) {
-	service, err := sheets.New(client)
-	if err != nil {
-		return err
-	}
-	rowData := make([]*sheets.RowData, len(applications))
-	rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Data"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Tipo da transação"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Investimento"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Quantidade"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Preço (R$)"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "IR (R$)"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Total Líquido (R$)"}},
-	}})
+func UpdateApplications(applications []magnetis.Application, spreadsheetId string) (err error) {
+	rowsCount := len(applications) + 1
+	v := make([][]interface{}, rowsCount)
+	v[0] = append(v[0], "Data", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
+
 	for i := range applications {
 		application := applications[i]
-		rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
-			createDateCell(application.Date.Year(), application.Date.Month(), application.Date.Day()),
-			createStringCell(application.Type.String()),
-			createStringCell(application.Investment),
-			createFloatMoneyCell(application.Quantity),
-			createFloatMoneyCell(application.Price),
-			createFloatMoneyCell(application.IR),
-			createFloatMoneyCell(application.Net)}})
+		v[i+1] = append(v[i+1],
+			fmt.Sprintf("=DATE(%d,%d,%d)", application.Date.Year(), application.Date.Month(), application.Date.Day()),
+			application.Type.String(),
+			application.Investment,
+			fmt.Sprintf("%f", application.Quantity),
+			fmt.Sprintf("%f", application.Price),
+			fmt.Sprintf("%f", application.IR),
+			fmt.Sprintf("%f", application.Net),
+		)
 	}
-	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "History"}}
-	rb := &sheets.Spreadsheet{
-		Sheets:     []*sheets.Sheet{equitySheet},
-		Properties: &sheets.SpreadsheetProperties{Title: "Planejamento"},
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Historico!A1:G%v", rowsCount))
+}
+
+func updateSpreadSheet(values [][]interface{}, spreadsheetId string, valuesRange string) (err error) {
+	service, err := sheets.New(client)
+	if err != nil {
+		return err
 	}
-	_, err = service.Spreadsheets.Create(rb).Context(ctx).Do()
+	rb := &sheets.ValueRange{Values: values, MajorDimension: "ROWS"}
+	valueInputOption := "USER_ENTERED"
+	_, err = service.Spreadsheets.Values.Update(spreadsheetId, valuesRange, rb).ValueInputOption(valueInputOption).Context(ctx).Do()
 	if err != nil {
 		return err
 	}
 	return
-}
-
-func createDateCell(year int, month time.Month, day int) *sheets.CellData {
-	return &sheets.CellData{
-		UserEnteredFormat: &sheets.CellFormat{NumberFormat: &sheets.NumberFormat{Type: "DATE", Pattern: "ddd\", \"d\"/\"m\"/\"yy"}},
-		UserEnteredValue:  &sheets.ExtendedValue{FormulaValue: fmt.Sprintf("=DATE(%d,%d,%d)", year, month, day)}}
-}
-
-func createStringCell(stringValue string) *sheets.CellData {
-	return &sheets.CellData{UserEnteredValue: &sheets.ExtendedValue{StringValue: stringValue}}
-}
-
-func createFloatMoneyCell(value float64) *sheets.CellData {
-	return createStringMoneyCell(fmt.Sprintf("%f", value))
-}
-
-func createStringMoneyCell(value string) *sheets.CellData {
-	return &sheets.CellData{
-		UserEnteredFormat: &sheets.CellFormat{NumberFormat: &sheets.NumberFormat{Type: "CURRENCY"}},
-		UserEnteredValue:  &sheets.ExtendedValue{FormulaValue: fmt.Sprintf("=%s", value)}}
 }
