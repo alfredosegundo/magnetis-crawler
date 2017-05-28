@@ -16,6 +16,7 @@ func main() {
 	var userId string
 	var username string
 	var password string
+	var spreadsheetId string
 	var shouldSave bool
 	var shouldPrint bool
 	var shouldPrintExcel bool
@@ -43,6 +44,12 @@ func main() {
 			Usage:       "Your password on magnetis api",
 			Destination: &password,
 			EnvVar:      "MAGNETIS_PASS",
+		},
+		cli.StringFlag{
+			Name:        "spreadsheet, sheet",
+			Usage:       "Your spreadsheet id on google drive",
+			Destination: &spreadsheetId,
+			EnvVar:      "GOOGLE_SPREADSHEET_ID",
 		},
 	}
 
@@ -92,7 +99,7 @@ func main() {
 				}
 				if shouldSave {
 					spreadsheet.Signin()
-					spreadsheet.UpdateEquityCurve(curve)
+					spreadsheet.UpdateEquityCurve(curve, spreadsheetId)
 				}
 				return nil
 			},

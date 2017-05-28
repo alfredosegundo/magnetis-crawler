@@ -108,34 +108,27 @@ func Signin() {
 	client = getClient(ctx, config)
 }
 
-func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
+func UpdateEquityCurve(curve *magnetis.EquityCurve, spreadsheetId string) (err error) {
+	rowsCount := len(curve.Equities) + 1
+	v := make([][]interface{}, rowsCount)
+	v[0] = append(v[0], "Data", "Saldo Atual")
 
 	equities := curve.Equities
-	rowData := make([]*sheets.RowData, len(equities))
-	rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Data"}},
-		{UserEnteredValue: &sheets.ExtendedValue{StringValue: "Saldo Atual"}}}})
 	for i := range equities {
-		if err != nil {
-			log.Println(err)
-		}
 		equity := equities[i]
-		rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
-			createDateCell(equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
-			createStringMoneyCell(equity.Value)}})
-	}
-	equitySheet := &sheets.Sheet{Data: []*sheets.GridData{{RowData: rowData}}, Properties: &sheets.SheetProperties{Title: "EquityCurve"}}
-	rb := &sheets.Spreadsheet{
-		Sheets:     []*sheets.Sheet{equitySheet},
-		Properties: &sheets.SpreadsheetProperties{Title: "Planejamento"},
+		v[i+1] = append(v[i+1],
+			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
+			fmt.Sprintf("=%s", equity.Value))
 	}
 	service, err := sheets.New(client)
 	if err != nil {
-		log.Fatalf("Unable to retrieve Sheets Client %v", err)
+		return err
 	}
-	_, err = service.Spreadsheets.Create(rb).Context(ctx).Do()
+	rb := &sheets.ValueRange{Values: v, MajorDimension: "ROWS"}
+
+	_, err = service.Spreadsheets.Values.Update(spreadsheetId, fmt.Sprintf("Rendimento!A1:B%v", rowsCount), rb).ValueInputOption("USER_ENTERED").Context(ctx).Do()
 	if err != nil {
-		log.Fatalf("Unable to retrieve data from sheet. %v", err)
+		return err
 	}
 	return
 }
@@ -143,7 +136,7 @@ func UpdateEquityCurve(curve *magnetis.EquityCurve) (err error) {
 func UpdateApplications(applications []magnetis.Application) (err error) {
 	service, err := sheets.New(client)
 	if err != nil {
-		log.Fatalf("Unable to retrieve Sheets Client %v", err)
+		return err
 	}
 	rowData := make([]*sheets.RowData, len(applications))
 	rowData = append(rowData, &sheets.RowData{Values: []*sheets.CellData{
@@ -173,7 +166,7 @@ func UpdateApplications(applications []magnetis.Application) (err error) {
 	}
 	_, err = service.Spreadsheets.Create(rb).Context(ctx).Do()
 	if err != nil {
-		log.Fatalf("Unable to retrieve data from sheet. %v", err)
+		return err
 	}
 	return
 }
