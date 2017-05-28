@@ -18,6 +18,8 @@ import (
 
 	"os/user"
 
+	"strings"
+
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -129,11 +131,11 @@ func UpdateApplications(applications []magnetis.Application, spreadsheetId strin
 		v[i+1] = append(v[i+1],
 			fmt.Sprintf("=DATE(%d,%d,%d)", application.Date.Year(), application.Date.Month(), application.Date.Day()),
 			application.Type.String(),
-			application.Investment,
-			fmt.Sprintf("%f", application.Quantity),
-			fmt.Sprintf("%f", application.Price),
-			fmt.Sprintf("%f", application.IR),
-			fmt.Sprintf("%f", application.Net),
+			strings.TrimSpace(application.Investment),
+			fmt.Sprintf("=%f", application.Quantity),
+			fmt.Sprintf("=%f", application.Price),
+			fmt.Sprintf("=%f", application.IR),
+			fmt.Sprintf("=%f", application.Net),
 		)
 	}
 	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Historico!A1:G%v", rowsCount))

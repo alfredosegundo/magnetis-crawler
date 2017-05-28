@@ -76,11 +76,13 @@ type TransactionType int
 const (
 	MoneyApplication TransactionType = iota
 	IRWithdrawal
+	Fees
 )
 
 var transactionTypes = [...]string{
 	"Application",
 	"IRWithdrawal",
+	"TransactionFees",
 }
 
 func (t TransactionType) String() string { return transactionTypes[t] }
@@ -200,10 +202,11 @@ func Applications() (applications []Application, err error) {
 	if err != nil {
 		return nil, err
 	}
-	rows := doc.Find("section.transactions table tr[class^='journal-summary__asset-trade']")
+	rows := doc.Find("section.transactions table tbody tr")
 	for i := range rows.Nodes {
 		anTransaction := Application{}
 		investmentRow := rows.Eq(i)
+
 		val, exists := investmentRow.Find("time").Attr("datetime")
 		if exists {
 			investmentDate, err := time.Parse("2006-01-02", val)
@@ -211,24 +214,27 @@ func Applications() (applications []Application, err error) {
 				return nil, err
 			}
 			anTransaction.Date = investmentDate
-			anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
-			anTransaction.Quantity = convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text())
-			anTransaction.Price = convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text())
-			anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
-			anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
-			if len(investmentRow.Find("span.color-additional-investment").Nodes) > 0 {
-				anTransaction.Type = MoneyApplication
-			}
-			if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
-				anTransaction.Type = IRWithdrawal
-				anTransaction.Net = -anTransaction.Net
-			}
-
-			applications = append(applications, anTransaction)
 		}
+		anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
+		anTransaction.Quantity = convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text())
+		anTransaction.Price = convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text())
+		anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
+		anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
+		if investmentRow.HasClass("journal-summary__transaction-fees") {
+			anTransaction.Type = Fees
+		}
+		if investmentRow.HasClass("journal-summary__asset-trade--with-transaction-fees") {
+			anTransaction.Type = MoneyApplication
+		}
+		if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
+			anTransaction.Type = IRWithdrawal
+		}
+
+		applications = append(applications, anTransaction)
 	}
 	return applications, nil
 }
+
 func convertPtToEnNumber(investmentValue string) float64 {
 	value, _ := strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(investmentValue, ".", "", -1), ",", ".", -1)), 64)
 	return value
