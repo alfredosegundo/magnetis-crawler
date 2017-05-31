@@ -76,13 +76,15 @@ type TransactionType int
 const (
 	MoneyApplication TransactionType = iota
 	IRWithdrawal
-	Fees
+	TransactionFees
+	AdvisoryFee
 )
 
 var transactionTypes = [...]string{
 	"Application",
 	"IRWithdrawal",
 	"TransactionFees",
+	"AdvisoryFee",
 }
 
 func (t TransactionType) String() string { return transactionTypes[t] }
@@ -221,10 +223,14 @@ func Applications() (applications []Application, err error) {
 		anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
 		anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
 		if investmentRow.HasClass("journal-summary__transaction-fees") {
-			anTransaction.Type = Fees
+			anTransaction.Type = TransactionFees
 		}
 		if investmentRow.HasClass("journal-summary__asset-trade--with-transaction-fees") {
 			anTransaction.Type = MoneyApplication
+		}
+		if investmentRow.HasClass("advisory-fee") {
+			anTransaction.Type = AdvisoryFee
+			anTransaction.Investment = investmentRow.Find("td:nth-child(1) span").Text()
 		}
 		if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
 			anTransaction.Type = IRWithdrawal
