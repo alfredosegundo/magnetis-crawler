@@ -216,6 +216,8 @@ func Applications() (applications []Application, err error) {
 				return nil, err
 			}
 			anTransaction.Date = investmentDate
+		} else {
+			anTransaction.Date = applications[len(applications)-1].Date
 		}
 		anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
 		anTransaction.Quantity = convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text())
