@@ -111,14 +111,17 @@ func Signin() {
 func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
-	v[0] = append(v[0], "Data", "Saldo Atual")
-	for i := range equities {
-		equity := equities[i]
-		v[i+1] = append(v[i+1],
+	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado")
+	for i, equity := range equities {
+		currentSlicePos := i + 1
+		currentRow := i + 2
+		v[currentSlicePos] = append(v[currentSlicePos],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
-			fmt.Sprintf("=%s", equity.Value))
+			fmt.Sprintf("=%s", equity.Value),
+			fmt.Sprintf("=IF(B%d=\"\",\"\",SUMIF(Aplicado!$A$2:A,\"<=\"&A%d,Aplicado!$B$2:B))", currentRow, currentRow))
 	}
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:B%v", rowsCount))
+
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:C%v", rowsCount))
 }
 
 func UpdateApplications(applications []magnetis.Application, spreadsheetId string) (err error) {
