@@ -113,7 +113,7 @@ func Signin() {
 func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
-	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %")
+	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %", "Retorno desde início")
 	for i, equity := range equities {
 		currentSlicePos := i + 1
 		currentRow := FirstRow + i
@@ -123,10 +123,11 @@ func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err er
 			fmt.Sprintf("=IF(B%d=\"\",\"\",SUMIF(Aplicado!$A$%d:A,\"<=\"&A%d,Aplicado!$B$%d:B))", currentRow, FirstRow, currentRow, FirstRow),
 			fmt.Sprintf("=IF(B%d=\"\",\"\",B%d-C%d)", currentRow, currentRow, currentRow),
 			fmt.Sprintf("=D%d-%s", currentRow, previousRow(currentRow)),
-			fmt.Sprintf("=IF(B%d=0,0,E%d/B%d)", currentRow, currentRow, currentRow))
+			fmt.Sprintf("=IF(B%d=0,0,E%d/B%d)", currentRow, currentRow, currentRow),
+			fmt.Sprintf("=SUM($F$%d:F%d)", FirstRow, currentRow))
 	}
 
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:F%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:G%v", rowsCount))
 }
 
 func previousRow(currentRow int) (previousRow string) {
