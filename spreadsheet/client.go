@@ -29,6 +29,8 @@ import (
 var client *http.Client
 var ctx context.Context
 
+const FirstRow = 2
+
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
@@ -111,18 +113,26 @@ func Signin() {
 func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
-	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno")
+	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia")
 	for i, equity := range equities {
 		currentSlicePos := i + 1
-		currentRow := i + 2
+		currentRow := FirstRow + i
 		v[currentSlicePos] = append(v[currentSlicePos],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
 			fmt.Sprintf("=%s", equity.Value),
-			fmt.Sprintf("=IF(B%d=\"\",\"\",SUMIF(Aplicado!$A$2:A,\"<=\"&A%d,Aplicado!$B$2:B))", currentRow, currentRow),
-			fmt.Sprintf("=IF(B%d=\"\",\"\",B%d-C%d)", currentRow, currentRow, currentRow))
+			fmt.Sprintf("=IF(B%d=\"\",\"\",SUMIF(Aplicado!$A$%d:A,\"<=\"&A%d,Aplicado!$B$%d:B))", currentRow, FirstRow, currentRow, FirstRow),
+			fmt.Sprintf("=IF(B%d=\"\",\"\",B%d-C%d)", currentRow, currentRow, currentRow),
+			fmt.Sprintf("=D%d-%s", currentRow, previousRow(currentRow)))
 	}
 
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:D%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:E%v", rowsCount))
+}
+
+func previousRow(currentRow int) (previousRow string) {
+	if currentRow == FirstRow {
+		return "0"
+	}
+	return fmt.Sprintf("D%d", currentRow-1)
 }
 
 func UpdateApplications(applications []magnetis.Application, spreadsheetId string) (err error) {
