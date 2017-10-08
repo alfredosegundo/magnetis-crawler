@@ -78,6 +78,7 @@ const (
 	IRWithdrawal
 	TransactionFees
 	AdvisoryFee
+	Redemption
 )
 
 var transactionTypes = [...]string{
@@ -85,6 +86,7 @@ var transactionTypes = [...]string{
 	"IRWithdrawal",
 	"TransactionFees",
 	"AdvisoryFee",
+	"Redemption",
 }
 
 func (t TransactionType) String() string { return transactionTypes[t] }
@@ -233,6 +235,9 @@ func Applications() (applications []Application, err error) {
 		if investmentRow.HasClass("advisory-fee") {
 			anTransaction.Type = AdvisoryFee
 			anTransaction.Investment = investmentRow.Find("td:nth-child(1) span").Text()
+		}
+		if len(investmentRow.Find("span.color-redemption").Nodes) > 0 {
+			anTransaction.Type = Redemption
 		}
 		if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
 			anTransaction.Type = IRWithdrawal
