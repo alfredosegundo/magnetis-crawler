@@ -16,6 +16,7 @@ import (
 
 	"fmt"
 
+	"errors"
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -123,6 +124,9 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("http status code: %d\nbody: %s", resp.StatusCode, string(body)))
 	}
 
 	icurve := make([][]interface{}, 0)
