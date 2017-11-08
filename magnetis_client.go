@@ -1,4 +1,4 @@
-package magnetis
+package main
 
 import (
 	"encoding/json"
@@ -126,7 +126,7 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("http status code: %d\nbody: %s", resp.StatusCode, string(body)))
+		return nil, errors.New(fmt.Sprintf("ERROR\nhttp status code: %d\nbody: %s", resp.StatusCode, string(body)))
 	}
 
 	icurve := make([][]interface{}, 0)
@@ -145,13 +145,17 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 	return
 }
 
-func Signin(username string, password string) (err error) {
+func MagnetisSignin(username string, password string) (err error) {
 	var signin = host + "/users/sign_in"
-	res, err := defaultClient.Get(signin)
+	resp, err := defaultClient.Get(signin)
 	if err != nil {
 		return err
 	}
-	doc, err := goquery.NewDocumentFromResponse(res)
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return errors.New(fmt.Sprintf("ERROR\nhttp status code: %d\nbody: %s", resp.StatusCode, string(body)))
+	}
+	doc, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
 		return err
 	}

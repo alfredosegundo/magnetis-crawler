@@ -1,12 +1,9 @@
-// Package spreadsheet provides an client to interact with google drive spreadsheets
-package spreadsheet
+package main
 
 import (
 	"fmt"
 	"io/ioutil"
 	"log"
-
-	"github.com/alfredosegundo/magnetis-crawler/magnetis"
 
 	"net/http"
 
@@ -93,7 +90,7 @@ func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
 	return config.Client(ctx, tok)
 }
 
-func Signin() {
+func SpreadsheetsSignin() {
 	ctx := context.Background()
 
 	b, err := ioutil.ReadFile("client_secret.json")
@@ -110,7 +107,7 @@ func Signin() {
 	client = getClient(ctx, config)
 }
 
-func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetId string) (err error) {
+func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %", "Retorno desde início", "R$/R$ investido", "Mês", "Ano")
@@ -140,7 +137,7 @@ func previousRow(currentRow int) (previousRow string) {
 	return fmt.Sprintf("D%d", currentRow-1)
 }
 
-func UpdateApplications(applications []magnetis.Application, spreadsheetId string) (err error) {
+func UpdateApplications(applications []Application, spreadsheetId string) (err error) {
 	rowsCount := len(applications) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
