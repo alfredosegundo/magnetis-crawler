@@ -17,6 +17,7 @@ import (
 	"fmt"
 
 	"errors"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -216,8 +217,14 @@ func Applications() (applications []Application, err error) {
 	}
 	rows := doc.Find("section.transactions table tbody tr")
 	for i := range rows.Nodes {
-		anTransaction := Application{}
 		investmentRow := rows.Eq(i)
+		anTransaction := Application{
+			Investment: investmentRow.Find("td:nth-child(2)").Text(),
+			Quantity:   convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text()),
+			Price:      convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text()),
+			IR:         convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text()),
+			Net:        convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text()),
+		}
 
 		val, exists := investmentRow.Find("time").Attr("datetime")
 		if exists {
@@ -229,11 +236,6 @@ func Applications() (applications []Application, err error) {
 		} else {
 			anTransaction.Date = applications[len(applications)-1].Date
 		}
-		anTransaction.Investment = investmentRow.Find("td:nth-child(2)").Text()
-		anTransaction.Quantity = convertPtToEnNumber(investmentRow.Find("td:nth-child(3)").Text())
-		anTransaction.Price = convertPtToEnNumber(investmentRow.Find("td:nth-child(4)").Text())
-		anTransaction.IR = convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text())
-		anTransaction.Net = convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text())
 		if investmentRow.HasClass("journal-summary__transaction-fees") {
 			anTransaction.Type = TransactionFees
 		}
