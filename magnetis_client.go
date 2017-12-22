@@ -81,6 +81,7 @@ const (
 	TransactionFees
 	AdvisoryFee
 	Redemption
+	ExpiredTitle
 )
 
 var transactionTypes = [...]string{
@@ -89,6 +90,7 @@ var transactionTypes = [...]string{
 	"TransactionFees",
 	"AdvisoryFee",
 	"Redemption",
+	"Expired",
 }
 
 func (t TransactionType) String() string { return transactionTypes[t] }
@@ -248,6 +250,9 @@ func Applications() (applications []Application, err error) {
 		}
 		if len(investmentRow.Find("span.color-redemption").Nodes) > 0 {
 			anTransaction.Type = Redemption
+		}
+		if len(investmentRow.Find("span.color-expired-asset").Nodes) > 0 {
+			anTransaction.Type = ExpiredTitle
 		}
 		if len(investmentRow.Find("span.color-ir").Nodes) > 0 {
 			anTransaction.Type = IRWithdrawal
