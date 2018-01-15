@@ -107,6 +107,10 @@ func SpreadsheetsSignin() {
 	client = getClient(ctx, config)
 }
 
+func sumAsset(firstRow int, currentRow int, assetName string) (formula string) {
+	return fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
+}
+
 func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
@@ -115,16 +119,6 @@ func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 	for i, equity := range equities {
 		currentSlicePos := i + 1
 		currentRow := FirstRow + i
-		sumApplication := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
-			FirstRow, FirstRow, currentRow, FirstRow, MoneyApplication)
-		sumRedemption := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
-			FirstRow, FirstRow, currentRow, FirstRow, Redemption)
-		sumExpired := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
-			FirstRow, FirstRow, currentRow, FirstRow, ExpiredTitle)
-		sumAdvisoryFee := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
-			FirstRow, FirstRow, currentRow, FirstRow, AdvisoryFee)
-		sumTransactionFees := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
-			FirstRow, FirstRow, currentRow, FirstRow, TransactionFees)
 		v[currentSlicePos] = append(v[currentSlicePos],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
 			fmt.Sprintf("=%s", equity.Value),
@@ -136,7 +130,12 @@ func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 			fmt.Sprintf("=D%d/C%d", currentRow, currentRow),
 			fmt.Sprintf("=%d", equity.Time.Month()),
 			fmt.Sprintf("=%d", equity.Time.Year()),
-			fmt.Sprintf("=%v-%v-%v+%v+%v", sumApplication, sumRedemption, sumExpired, sumAdvisoryFee, sumTransactionFees))
+			fmt.Sprintf("=%v-%v-%v+%v+%v",
+				sumAsset(FirstRow, currentRow, MoneyApplication.String()),
+				sumAsset(FirstRow, currentRow, Redemption.String()),
+				sumAsset(FirstRow, currentRow, ExpiredTitle.String()),
+				sumAsset(FirstRow, currentRow, AdvisoryFee.String()),
+				sumAsset(FirstRow, currentRow, TransactionFees.String())))
 	}
 
 	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
