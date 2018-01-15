@@ -110,10 +110,21 @@ func SpreadsheetsSignin() {
 func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
-	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %", "Retorno desde início", "R$/R$ investido", "Mês", "Ano")
+	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %",
+		"Retorno desde início", "R$/R$ investido", "Mês", "Ano", "Total Aplicado")
 	for i, equity := range equities {
 		currentSlicePos := i + 1
 		currentRow := FirstRow + i
+		sumApplication := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
+			FirstRow, FirstRow, currentRow, FirstRow, MoneyApplication)
+		sumRedemption := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
+			FirstRow, FirstRow, currentRow, FirstRow, Redemption)
+		sumExpired := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
+			FirstRow, FirstRow, currentRow, FirstRow, ExpiredTitle)
+		sumAdvisoryFee := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
+			FirstRow, FirstRow, currentRow, FirstRow, AdvisoryFee)
+		sumTransactionFees := fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")",
+			FirstRow, FirstRow, currentRow, FirstRow, TransactionFees)
 		v[currentSlicePos] = append(v[currentSlicePos],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
 			fmt.Sprintf("=%s", equity.Value),
@@ -124,10 +135,11 @@ func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 			fmt.Sprintf("=SUM($F$%d:F%d)", FirstRow, currentRow),
 			fmt.Sprintf("=D%d/C%d", currentRow, currentRow),
 			fmt.Sprintf("=%d", equity.Time.Month()),
-			fmt.Sprintf("=%d", equity.Time.Year()))
+			fmt.Sprintf("=%d", equity.Time.Year()),
+			fmt.Sprintf("=%v-%v-%v+%v+%v", sumApplication, sumRedemption, sumExpired, sumAdvisoryFee, sumTransactionFees))
 	}
 
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:J%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
 }
 
 func previousRow(currentRow int) (previousRow string) {
