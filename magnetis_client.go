@@ -21,7 +21,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var host string = "https://magnetis.com.br"
+var host = "https://magnetis.com.br"
 
 type Equity struct {
 	Time  time.Time
