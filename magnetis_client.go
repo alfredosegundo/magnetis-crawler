@@ -96,17 +96,18 @@ var transactionTypes = [...]string{
 func (t TransactionType) String() string { return transactionTypes[t] }
 
 type Application struct {
-	Date       time.Time
-	Type       TransactionType
-	Investment string
-	Quantity   float64
-	Price      float64
-	IR         float64
-	Net        float64
+	Date            time.Time
+	ApplicationDate time.Time
+	Type            TransactionType
+	Investment      string
+	Quantity        float64
+	Price           float64
+	IR              float64
+	Net             float64
 }
 
 func (a Application) String() string {
-	return fmt.Sprintf("%v\t%s\t%s\t%f\t%f\t%f\t%f", a.Date, a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
+	return fmt.Sprintf("%v\t%v\t%s\t%s\t%f\t%f\t%f\t%f", a.ApplicationDate, a.Date, a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
 }
 
 func (a Application) Excel() string {
@@ -227,9 +228,7 @@ func Applications() (applications []Application, err error) {
 			IR:         convertPtToEnNumber(investmentRow.Find("td:nth-child(5)").Text()),
 			Net:        convertPtToEnNumber(investmentRow.Find("td:nth-child(6)").Text()),
 		}
-
-		val, exists := investmentRow.Find("time").Attr("datetime")
-		if exists {
+		if val, exists := investmentRow.Find("time").Attr("datetime"); exists {
 			investmentDate, err := time.Parse("2006-01-02", val)
 			if err != nil {
 				return nil, err
@@ -237,6 +236,12 @@ func Applications() (applications []Application, err error) {
 			anTransaction.Date = investmentDate
 		} else {
 			anTransaction.Date = applications[len(applications)-1].Date
+		}
+		dateElement := investmentRow.ParentsFiltered("div.user-order__header").First().Find("header time")
+		if applicationDate, exists := dateElement.Attr("datetime"); exists {
+			if anTransaction.ApplicationDate, err = time.Parse("2006-01-02", applicationDate); err != nil {
+				break
+			}
 		}
 		if investmentRow.HasClass("journal-summary__transaction-fees") {
 			anTransaction.Type = TransactionFees

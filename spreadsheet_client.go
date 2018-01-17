@@ -108,7 +108,7 @@ func SpreadsheetsSignin() {
 }
 
 func sumAsset(firstRow int, currentRow int, assetName string) (formula string) {
-	return fmt.Sprintf("SUMIFS(Historico!$G$%v:$G,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$B$%v:$B,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
+	return fmt.Sprintf("SUMIFS(Historico!$H$%v:$H,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$C$%v:$C,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
 }
 
 func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
@@ -151,11 +151,12 @@ func previousRow(currentRow int) (previousRow string) {
 func UpdateApplications(applications []Application, spreadsheetId string) (err error) {
 	rowsCount := len(applications) + 1
 	v := make([][]interface{}, rowsCount)
-	v[0] = append(v[0], "Data", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
+	v[0] = append(v[0], "Data aplicação", "Data efetivação", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
 
 	for i := range applications {
 		application := applications[i]
 		v[i+1] = append(v[i+1],
+			fmt.Sprintf("=DATE(%d,%d,%d)", application.ApplicationDate.Year(), application.ApplicationDate.Month(), application.ApplicationDate.Day()),
 			fmt.Sprintf("=DATE(%d,%d,%d)", application.Date.Year(), application.Date.Month(), application.Date.Day()),
 			application.Type.String(),
 			strings.TrimSpace(application.Investment),
@@ -165,7 +166,7 @@ func UpdateApplications(applications []Application, spreadsheetId string) (err e
 			fmt.Sprintf("=%f", application.Net),
 		)
 	}
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Historico!A1:G%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Historico!A1:H%v", rowsCount))
 }
 
 func updateSpreadSheet(values [][]interface{}, spreadsheetId string, valuesRange string) (err error) {
