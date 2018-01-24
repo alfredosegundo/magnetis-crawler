@@ -107,7 +107,7 @@ func SpreadsheetsSignin() {
 	client = getClient(ctx, config)
 }
 
-func sumAsset(firstRow int, currentRow int, assetName string) (formula string) {
+func sumAsset(firstRow int, currentRow int, assetName TransactionType) (formula string) {
 	return fmt.Sprintf("SUMIFS(Historico!$H$%v:$H,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$C$%v:$C,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
 }
 
@@ -131,11 +131,11 @@ func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 			fmt.Sprintf("=%d", equity.Time.Month()),
 			fmt.Sprintf("=%d", equity.Time.Year()),
 			fmt.Sprintf("=%v-%v-%v+%v+%v",
-				sumAsset(FirstRow, currentRow, MoneyApplication.String()),
-				sumAsset(FirstRow, currentRow, Redemption.String()),
-				sumAsset(FirstRow, currentRow, ExpiredTitle.String()),
-				sumAsset(FirstRow, currentRow, AdvisoryFee.String()),
-				sumAsset(FirstRow, currentRow, TransactionFees.String())))
+				sumAsset(FirstRow, currentRow, MoneyApplication),
+				sumAsset(FirstRow, currentRow, Redemption),
+				sumAsset(FirstRow, currentRow, ExpiredTitle),
+				sumAsset(FirstRow, currentRow, AdvisoryFee),
+				sumAsset(FirstRow, currentRow, TransactionFees)))
 	}
 
 	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
