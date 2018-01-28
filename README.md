@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/alfredosegundo/magnetis-crawler.svg?branch=master)](https://travis-ci.org/alfredosegundo/magnetis-crawler)
+
 This is me, learning [go](https://golang.org/ "The Go Programming Language
 ").
 
