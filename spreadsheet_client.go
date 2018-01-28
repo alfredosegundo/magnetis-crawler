@@ -92,9 +92,13 @@ func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
 
 func SpreadsheetsSignin() {
 	ctx := context.Background()
-
-	b, err := ioutil.ReadFile("client_secret.json")
-	if err != nil {
+	var b []byte
+	var err error
+	if b, err = ioutil.ReadFile("client_secret.json"); os.IsNotExist(err) {
+		log.Println("client_secret.json file does not exist")
+		b = []byte(os.Getenv("CLIENT_SECRET"))
+		log.Println("read secret from env var")
+	} else {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
 
