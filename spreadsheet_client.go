@@ -57,11 +57,16 @@ func tokenCacheFile() (string, error) {
 }
 
 func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
+	var f *os.File
+	var err error
 	t := &oauth2.Token{}
+	if f, err = os.Open(file); err != nil {
+		if envvar, exist := os.LookupEnv("CREDENTIALS"); exist {
+			err = json.NewDecoder(strings.NewReader(envvar)).Decode(t)
+			return t, nil
+		}
+		return t, err
+	}
 	err = json.NewDecoder(f).Decode(t)
 	defer f.Close()
 	return t, err
@@ -84,6 +89,7 @@ func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
 	}
 	tok, err := tokenFromFile(cacheFile)
 	if err != nil {
+		log.Println("token cache file not found.")
 		tok = getTokenFromWeb(config)
 		saveToken(cacheFile, tok)
 	}
@@ -94,12 +100,12 @@ func SpreadsheetsSignin() {
 	ctx := context.Background()
 	var b []byte
 	var err error
-	if b, err = ioutil.ReadFile("client_secret.json"); os.IsNotExist(err) {
-		log.Println("client_secret.json file does not exist")
-		b = []byte(os.Getenv("CLIENT_SECRET"))
-		log.Println("read secret from env var")
-	} else {
-		log.Fatalf("Unable to read client secret file: %v", err)
+	if b, err = ioutil.ReadFile("client_secret.json"); err != nil {
+		if envvar, exist := os.LookupEnv("CLIENT_SECRET"); exist {
+			b = []byte(envvar)
+		} else {
+			log.Fatalf("Unable to read client secret env var. It's not set.")
+		}
 	}
 
 	// If modifying these scopes, delete your previously saved credentials
