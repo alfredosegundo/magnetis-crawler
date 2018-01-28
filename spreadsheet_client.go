@@ -26,7 +26,7 @@ import (
 var client *http.Client
 var ctx context.Context
 
-const FirstRow = 2
+const firstRow = 2
 
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
@@ -118,31 +118,31 @@ func UpdateEquityCurve(equities []Equity, spreadsheetID string) (err error) {
 		"Retorno desde início", "R$/R$ investido", "Mês", "Ano", "Total Aplicado")
 	for i, equity := range equities {
 		currentSlicePos := i + 1
-		currentRow := FirstRow + i
+		currentRow := firstRow + i
 		v[currentSlicePos] = append(v[currentSlicePos],
 			fmt.Sprintf("=DATE(%d,%d,%d)", equity.Time.Year(), equity.Time.Month(), equity.Time.Day()),
 			fmt.Sprintf("=%s", equity.Value),
-			fmt.Sprintf("=SUMIF(Aplicado!$A$%d:A,\"<=\"&A%d,Aplicado!$B$%d:B)", FirstRow, currentRow, FirstRow),
+			fmt.Sprintf("=SUMIF(Aplicado!$A$%d:A,\"<=\"&A%d,Aplicado!$B$%d:B)", firstRow, currentRow, firstRow),
 			fmt.Sprintf("=B%d-C%d", currentRow, currentRow),
 			fmt.Sprintf("=D%d-%s", currentRow, previousRow(currentRow)),
 			fmt.Sprintf("=E%d/B%d", currentRow, currentRow),
-			fmt.Sprintf("=SUM($F$%d:F%d)", FirstRow, currentRow),
+			fmt.Sprintf("=SUM($F$%d:F%d)", firstRow, currentRow),
 			fmt.Sprintf("=D%d/C%d", currentRow, currentRow),
 			fmt.Sprintf("=%d", equity.Time.Month()),
 			fmt.Sprintf("=%d", equity.Time.Year()),
 			fmt.Sprintf("=%v-%v-%v+%v+%v",
-				sumAsset(FirstRow, currentRow, MoneyApplication),
-				sumAsset(FirstRow, currentRow, Redemption),
-				sumAsset(FirstRow, currentRow, ExpiredTitle),
-				sumAsset(FirstRow, currentRow, AdvisoryFee),
-				sumAsset(FirstRow, currentRow, TransactionFees)))
+				sumAsset(firstRow, currentRow, MoneyApplication),
+				sumAsset(firstRow, currentRow, Redemption),
+				sumAsset(firstRow, currentRow, ExpiredTitle),
+				sumAsset(firstRow, currentRow, AdvisoryFee),
+				sumAsset(firstRow, currentRow, TransactionFees)))
 	}
 
 	return updateSpreadSheet(v, spreadsheetID, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
 }
 
 func previousRow(currentRow int) (previousRow string) {
-	if currentRow == FirstRow {
+	if currentRow == firstRow {
 		return "0"
 	}
 	return fmt.Sprintf("D%d", currentRow-1)
