@@ -111,7 +111,7 @@ func sumAsset(firstRow int, currentRow int, assetName TransactionType) (formula 
 	return fmt.Sprintf("SUMIFS(Historico!$H$%v:$H,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$C$%v:$C,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
 }
 
-func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
+func UpdateEquityCurve(equities []Equity, spreadsheetID string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %",
@@ -138,7 +138,7 @@ func UpdateEquityCurve(equities []Equity, spreadsheetId string) (err error) {
 				sumAsset(FirstRow, currentRow, TransactionFees)))
 	}
 
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetID, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
 }
 
 func previousRow(currentRow int) (previousRow string) {
@@ -148,7 +148,7 @@ func previousRow(currentRow int) (previousRow string) {
 	return fmt.Sprintf("D%d", currentRow-1)
 }
 
-func UpdateApplications(applications []Application, spreadsheetId string) (err error) {
+func UpdateApplications(applications []Application, spreadsheetID string) (err error) {
 	rowsCount := len(applications) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data aplicação", "Data efetivação", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
@@ -166,17 +166,17 @@ func UpdateApplications(applications []Application, spreadsheetId string) (err e
 			fmt.Sprintf("=%f", application.Net),
 		)
 	}
-	return updateSpreadSheet(v, spreadsheetId, fmt.Sprintf("Historico!A1:H%v", rowsCount))
+	return updateSpreadSheet(v, spreadsheetID, fmt.Sprintf("Historico!A1:H%v", rowsCount))
 }
 
-func updateSpreadSheet(values [][]interface{}, spreadsheetId string, valuesRange string) (err error) {
+func updateSpreadSheet(values [][]interface{}, spreadsheetID string, valuesRange string) (err error) {
 	service, err := sheets.New(client)
 	if err != nil {
 		return err
 	}
 	rb := &sheets.ValueRange{Values: values, MajorDimension: "ROWS"}
 	valueInputOption := "USER_ENTERED"
-	_, err = service.Spreadsheets.Values.Update(spreadsheetId, valuesRange, rb).ValueInputOption(valueInputOption).Context(ctx).Do()
+	_, err = service.Spreadsheets.Values.Update(spreadsheetID, valuesRange, rb).ValueInputOption(valueInputOption).Context(ctx).Do()
 	if err != nil {
 		return err
 	}
