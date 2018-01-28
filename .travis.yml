@@ -4,5 +4,6 @@ go:
   - 1.8
 
 after_success:
- - go run application.go curve -s
- - go run application.go applications -s
+ - go build
+ - ./magnetis-crawler curve -s
+ - ./magnetis-crawler applications -s
