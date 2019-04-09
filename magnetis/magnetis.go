@@ -1,4 +1,4 @@
-package main
+package magnetis
 
 import (
 	"encoding/json"

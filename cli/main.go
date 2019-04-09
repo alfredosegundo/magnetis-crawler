@@ -6,6 +6,9 @@ import (
 
 	"os"
 
+	"github.com/alfredosegundo/magnetis-crawler/magnetis"
+	"github.com/alfredosegundo/magnetis-crawler/spreadsheet"
+
 	"github.com/urfave/cli"
 )
 
@@ -73,12 +76,12 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := MagnetisSignin(username, password)
+				err := magnetis.MagnetisSignin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
 
-				curve, err := GetEquityCurve(userId)
+				curve, err := magnetis.GetEquityCurve(userId)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -95,8 +98,8 @@ func main() {
 					}
 				}
 				if shouldSave {
-					SpreadsheetsSignin()
-					err = UpdateEquityCurve(curve.Equities, spreadsheetId)
+					spreadsheet.SpreadsheetsSignin()
+					err = spreadsheet.UpdateEquityCurve(curve.Equities, spreadsheetId)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -121,11 +124,11 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := MagnetisSignin(username, password)
+				err := magnetis.MagnetisSignin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
-				plan, err := GetInvestmentPlan(userId)
+				plan, err := magnetis.GetInvestmentPlan(userId)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -155,11 +158,11 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := MagnetisSignin(username, password)
+				err := magnetis.MagnetisSignin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
-				assets, err := Assets(userId)
+				assets, err := magnetis.Assets(userId)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -196,11 +199,11 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := MagnetisSignin(username, password)
+				err := magnetis.MagnetisSignin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
-				applications, err := Applications()
+				applications, err := magnetis.Applications()
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -215,8 +218,8 @@ func main() {
 					}
 				}
 				if shouldSave {
-					SpreadsheetsSignin()
-					err = UpdateApplications(applications, spreadsheetId)
+					spreadsheet.SpreadsheetsSignin()
+					err = spreadsheet.UpdateApplications(applications, spreadsheetId)
 					if err != nil {
 						log.Fatal(err)
 					}

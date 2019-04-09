@@ -1,4 +1,4 @@
-package main
+package spreadsheet
 
 import (
 	"fmt"
@@ -17,6 +17,7 @@ import (
 
 	"strings"
 
+	"github.com/alfredosegundo/magnetis-crawler/magnetis"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -117,11 +118,11 @@ func SpreadsheetsSignin() {
 	client = getClient(ctx, config)
 }
 
-func sumAsset(firstRow int, currentRow int, assetName TransactionType) (formula string) {
+func sumAsset(firstRow int, currentRow int, assetName magnetis.TransactionType) (formula string) {
 	return fmt.Sprintf("SUMIFS(Historico!$H$%v:$H,Historico!$A$%v:$A,\"<=\"&$A%v,Historico!$C$%v:$C,\"=%v\")", firstRow, firstRow, currentRow, firstRow, assetName)
 }
 
-func UpdateEquityCurve(equities []Equity, spreadsheetID string) (err error) {
+func UpdateEquityCurve(equities []magnetis.Equity, spreadsheetID string) (err error) {
 	rowsCount := len(equities) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data", "Saldo Atual", "Total Aplicado", "Retorno", "Retorno dia", "Retorno dia %",
@@ -141,11 +142,11 @@ func UpdateEquityCurve(equities []Equity, spreadsheetID string) (err error) {
 			fmt.Sprintf("=%d", equity.Time.Month()),
 			fmt.Sprintf("=%d", equity.Time.Year()),
 			fmt.Sprintf("=%v-%v-%v+%v+%v",
-				sumAsset(firstRow, currentRow, MoneyApplication),
-				sumAsset(firstRow, currentRow, Redemption),
-				sumAsset(firstRow, currentRow, ExpiredTitle),
-				sumAsset(firstRow, currentRow, AdvisoryFee),
-				sumAsset(firstRow, currentRow, TransactionFees)))
+				sumAsset(firstRow, currentRow, magnetis.MoneyApplication),
+				sumAsset(firstRow, currentRow, magnetis.Redemption),
+				sumAsset(firstRow, currentRow, magnetis.ExpiredTitle),
+				sumAsset(firstRow, currentRow, magnetis.AdvisoryFee),
+				sumAsset(firstRow, currentRow, magnetis.TransactionFees)))
 	}
 
 	return updateSpreadSheet(v, spreadsheetID, fmt.Sprintf("Rendimento!A1:K%v", rowsCount))
@@ -158,7 +159,7 @@ func previousRow(currentRow int) (previousRow string) {
 	return fmt.Sprintf("D%d", currentRow-1)
 }
 
-func UpdateApplications(applications []Application, spreadsheetID string) (err error) {
+func UpdateApplications(applications []magnetis.Application, spreadsheetID string) (err error) {
 	rowsCount := len(applications) + 1
 	v := make([][]interface{}, rowsCount)
 	v[0] = append(v[0], "Data aplicação", "Data efetivação", "Tipo da transação", "Investimento", "Quantidade", "Preço (R$)", "IR (R$)", "Total Líquido (R$)")
