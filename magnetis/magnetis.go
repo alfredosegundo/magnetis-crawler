@@ -49,15 +49,11 @@ func (e EquityCurve) Less(i, j int) bool {
 
 type InvestmentPlan struct {
 	Age               int
-	Experience        string
-	Goal              string
-	GoalValue         float32 `json:"goal_value"`
-	InitialInvestment float32 `json:"initial_investment"`
-	LossTolerance     string  `json:"loss_tolerance"`
-	MonthlyInvestment float32 `json:"monthly_investment"`
+	GoalValue         float64 `json:"goal_value,string"`
+	InitialInvestment float32 `json:"initial_investment,string"`
+	MonthlyInvestment float32 `json:"monthly_investment,string"`
 	PeriodInYears     int     `json:"period_in_years"`
 	RiskLevel         int     `json:"risk_level"`
-	RiskProfile       string  `json:"risk_profile"`
 }
 
 type Asset struct {
