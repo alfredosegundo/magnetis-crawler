@@ -4,6 +4,6 @@ go:
   - 1.10.2
 
 after_success:
- - go build -o magnetis-crawler cli/main.go
+ - go build -o magnetis-crawler main.go
  - ./magnetis-crawler curve -s
  - ./magnetis-crawler applications -s
