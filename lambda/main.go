@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/alfredosegundo/magnetis-crawler/magnetis"
+	"github.com/alfredosegundo/magnetis-crawler/spreadsheet"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -18,16 +19,27 @@ type MyEvent struct {
 
 // HandleRequest is the entrypoint of the lambda function
 func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
-	err := magnetis.MagnetisSignin(os.Getenv("MAGNETIS_USER_ID"), os.Getenv("MAGNETIS_PASSWORD"))
+	magnetisUserID := os.Getenv("MAGNETIS_USER_ID")
+	magnetisPassword := os.Getenv("MAGNETIS_PASSWORD")
+	userID := os.Getenv("USER_ID")
+	spreadsheetID := os.Getenv("SPREADSHEET_ID")
+	err := magnetis.MagnetisSignin(magnetisUserID, magnetisPassword)
+
 	if err != nil {
-		return fmt.Sprintf("Failed to login: \n%v", err), err
+		log.Fatal(err)
 	}
-	plan, err := magnetis.GetInvestmentPlan(os.Getenv("USER_ID"))
+	spreadsheet.SpreadsheetsSignin()
+	curve, err := magnetis.GetEquityCurve(userID)
 	if err != nil {
-		return fmt.Sprintf("Failed to get investment plan: \n%v", err), err
+		log.Fatal(err)
 	}
 
-	return fmt.Sprintf("Plan: %v", plan), nil
+	err = spreadsheet.UpdateEquityCurve(curve.Equities, spreadsheetID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return "done", nil
 }
 
 func main() {

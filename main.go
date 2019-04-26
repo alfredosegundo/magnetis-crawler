@@ -83,7 +83,7 @@ func main() {
 
 				curve, err := magnetis.GetEquityCurve(userId)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatalf("Error retrieving equity curve: %v", err)
 				}
 				if shouldPrint {
 					equities := curve.Equities

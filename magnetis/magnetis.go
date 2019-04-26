@@ -3,6 +3,7 @@ package magnetis
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"sort"
@@ -15,8 +16,6 @@ import (
 	"strconv"
 
 	"fmt"
-
-	"errors"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -116,24 +115,26 @@ var defaultClient = &http.Client{
 }
 
 func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
-	resp, err := defaultClient.Get(host + "/pricing/api/portfolio/" + userId + "/equity_curve")
+	uri := host + "/pricing/api/portfolio/" + userId + "/equity_curve"
+	log.Println(fmt.Sprintf("Equity curve url: %s", uri))
+	resp, err := defaultClient.Get(uri)
 	if err != nil {
 		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to read response body: %v", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("ERROR\nhttp status code: %d\nbody: %s", resp.StatusCode, string(body)))
+		return nil, fmt.Errorf("http status code: %d\nbody: %s", resp.StatusCode, string(body))
 	}
 
 	icurve := make([][]interface{}, 0)
 
 	err = json.Unmarshal(body, &icurve)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("Failed to unmarshal response body: %s", string(body))
 	}
 	curve = new(EquityCurve)
 	for i := range icurve {
@@ -147,13 +148,15 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 
 func MagnetisSignin(username string, password string) (err error) {
 	var signin = host + "/users/sign_in"
+	log.Printf("singing in on: %s", signin)
 	resp, err := defaultClient.Get(signin)
 	if err != nil {
 		return err
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		return errors.New(fmt.Sprintf("ERROR\nhttp status code: %d\nbody: %s", resp.StatusCode, string(body)))
+		return fmt.Errorf("ERROR\nhttp status code: %d\nbody: %s", resp.StatusCode, string(body))
 	}
 	doc, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
