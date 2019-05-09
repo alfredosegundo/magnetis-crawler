@@ -22,11 +22,13 @@ import (
 
 var host = "https://magnetis.com.br"
 
+// An Equity represents the amount of money if all of the assets were liquidated.
 type Equity struct {
-	Time  time.Time
-	Value string
+	Time  time.Time // Day when the value was measured
+	Value string    // Amount of money
 }
 
+// Excel prints an equity as two excel cells separated by tabs \t
 func (e Equity) Excel() string {
 	et := e.Time
 	return fmt.Sprintf("=DATE(%d,%d,%d)\t=%s", et.Year(), et.Month(), et.Day(), e.Value)
@@ -36,6 +38,7 @@ func (e Equity) String() string {
 	return fmt.Sprintf("%v\t%s", e.Time, e.Value)
 }
 
+// An EquityCurve holds a slice of Equity
 type EquityCurve struct {
 	Equities []Equity
 }
@@ -46,6 +49,7 @@ func (e EquityCurve) Less(i, j int) bool {
 	return e.Equities[i].Time.Before(e.Equities[j].Time)
 }
 
+// An InvestmentPlan holds the original plan for the magnetis account plan
 type InvestmentPlan struct {
 	Age               int
 	GoalValue         float64 `json:"goal_value,string"`
@@ -55,9 +59,10 @@ type InvestmentPlan struct {
 	RiskLevel         int     `json:"risk_level"`
 }
 
+// An Asset is an investment acquired for the account
 type Asset struct {
 	Amount             string
-	AssetId            int    `json:"asset_id"`
+	AssetID            int    `json:"asset_id"`
 	AssetReturn        string `json:"asset_return"`
 	CategoryKey        string `json:"category_key"`
 	InstrumentTypeName string `json:"instrument_type_name"`
@@ -68,8 +73,10 @@ type Asset struct {
 	Yield              string
 }
 
+// TransactionType represents which transactions was performed with an Asset
 type TransactionType int
 
+// TransactionType codes for each type
 const (
 	MoneyApplication TransactionType = iota
 	IRWithdrawal
