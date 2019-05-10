@@ -19,9 +19,9 @@ type MyEvent struct {
 
 // HandleRequest is the entrypoint of the lambda function
 func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
-	magnetisUserID := os.Getenv("MAGNETIS_USER_ID")
-	magnetisPassword := os.Getenv("MAGNETIS_PASSWORD")
-	userID := os.Getenv("USER_ID")
+	magnetisUserID := os.Getenv("MAGNETIS_USER")
+	magnetisPassword := os.Getenv("MAGNETIS_PASS")
+	userID := os.Getenv("MAGNETIS_USER_ID")
 	spreadsheetID := os.Getenv("SPREADSHEET_ID")
 	err := magnetis.MagnetisSignin(magnetisUserID, magnetisPassword)
 

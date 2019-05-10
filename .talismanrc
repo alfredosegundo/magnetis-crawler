@@ -1,4 +1,4 @@
 fileignoreconfig:
 - filename: lambda/main.go
-  checksum: 120b66cb9f3b41236e29bb4eb53a5664bf7f97f27472acc7dc73d9906002449d
+  checksum: edf720122d53be2966cab7237493bf3f0cc3cea20dcfe2348e205901a4262832
   ignore_detectors: []
