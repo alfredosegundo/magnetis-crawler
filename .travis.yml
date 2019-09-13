@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.10.2
+  - 1.13
 
 after_success:
  - go build -o magnetis-crawler main.go
