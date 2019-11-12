@@ -241,7 +241,9 @@ func Applications() (applications []Application, err error) {
 			}
 			anTransaction.Date = investmentDate
 		} else {
-			anTransaction.Date = applications[len(applications)-1].Date
+			if !investmentRow.HasClass("advisory-fee") {
+				anTransaction.Date = applications[len(applications)-1].Date
+			}
 		}
 		dateElement := investmentRow.ParentsFiltered("div.user-order__header").First().Find("header time")
 		if applicationDate, exists := dateElement.Attr("datetime"); exists {
