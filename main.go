@@ -28,25 +28,29 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:        "userId, U",
+			Name:        "userId",
+			Aliases:     []string{"U"},
 			Usage:       "Your user id on magnetis api",
 			Destination: &userId,
 			EnvVars:     []string{"MAGNETIS_USER_ID"},
 		},
 		&cli.StringFlag{
-			Name:        "username, u",
+			Name:        "username",
+			Aliases:     []string{"u"},
 			Usage:       "Your username on magnetis website",
 			Destination: &username,
 			EnvVars:     []string{"MAGNETIS_USER"},
 		},
 		&cli.StringFlag{
-			Name:        "password, p",
+			Name:        "password",
+			Aliases:     []string{"p"},
 			Usage:       "Your password on magnetis api",
 			Destination: &password,
 			EnvVars:     []string{"MAGNETIS_PASS"},
 		},
 		&cli.StringFlag{
 			Name:        "spreadsheet, sheet",
+			Aliases:     []string{"sheet"},
 			Usage:       "Your spreadsheet id on google drive",
 			Destination: &spreadsheetId,
 			EnvVars:     []string{"GOOGLE_SPREADSHEET_ID"},
@@ -60,17 +64,20 @@ func main() {
 			Usage:   "Get your equity curve from magnetis api",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:        "save, s",
+					Name:        "save",
+					Aliases:     []string{"s"},
 					Usage:       "if we should save on drive",
 					Destination: &shouldSave,
 				},
 				&cli.BoolFlag{
-					Name:        "print, p",
+					Name:        "print",
+					Aliases:     []string{"p"},
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
 				&cli.BoolFlag{
-					Name:        "excel, e",
+					Name:        "excel",
+					Aliases:     []string{"e"},
 					Usage:       "Print on the console as tab separated execel formated values",
 					Destination: &shouldPrintExcel,
 				},
@@ -113,12 +120,14 @@ func main() {
 			Usage:   "Get your investment plan from magnetis api",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:        "save, s",
+					Name:        "save",
+					Aliases:     []string{"s"},
 					Usage:       "if we should save on drive",
 					Destination: &shouldSave,
 				},
 				&cli.BoolFlag{
-					Name:        "print, p",
+					Name:        "print",
+					Aliases:     []string{"p"},
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
@@ -147,12 +156,14 @@ func main() {
 			Usage:   "Get your assets from magnetis api",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:        "save, s",
+					Name:        "save",
+					Aliases:     []string{"s"},
 					Usage:       "if we should save on drive",
 					Destination: &shouldSave,
 				},
 				&cli.BoolFlag{
-					Name:        "print, p",
+					Name:        "print",
+					Aliases:     []string{"p"},
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
@@ -183,17 +194,20 @@ func main() {
 			Usage:   "Get your application history from magnetis website",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:        "save, s",
+					Name:        "save",
+					Aliases:     []string{"s"},
 					Usage:       "if we should save on drive",
 					Destination: &shouldSave,
 				},
 				&cli.BoolFlag{
-					Name:        "print, p",
+					Name:        "print",
+					Aliases:     []string{"p"},
 					Usage:       "Print on the console",
 					Destination: &shouldPrint,
 				},
 				&cli.BoolFlag{
-					Name:        "excel, e",
+					Name:        "excel",
+					Aliases:     []string{"e"},
 					Usage:       "Print on the console as tab separated execel formated values",
 					Destination: &shouldPrintExcel,
 				},

@@ -8,3 +8,4 @@ client_secret.json
 magnetis-crawler
 magnetis-crawler.zip
 outputfile.txt
+.env
