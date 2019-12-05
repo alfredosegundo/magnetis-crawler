@@ -83,7 +83,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := magnetis.MagnetisSignin(username, password)
+				err := magnetis.Signin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -133,7 +133,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := magnetis.MagnetisSignin(username, password)
+				err := magnetis.Signin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -169,7 +169,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := magnetis.MagnetisSignin(username, password)
+				err := magnetis.Signin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -213,7 +213,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				err := magnetis.MagnetisSignin(username, password)
+				err := magnetis.Signin(username, password)
 				if err != nil {
 					log.Fatal(err)
 				}

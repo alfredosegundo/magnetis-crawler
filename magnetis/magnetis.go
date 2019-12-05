@@ -153,7 +153,7 @@ func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
 	return
 }
 
-func MagnetisSignin(username string, password string) (err error) {
+func Signin(username string, password string) (err error) {
 	var signin = host + "/users/sign_in"
 	log.Printf("singing in on: %s", signin)
 	resp, err := defaultClient.Get(signin)

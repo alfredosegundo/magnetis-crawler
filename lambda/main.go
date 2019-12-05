@@ -23,7 +23,7 @@ func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
 	magnetisPassword := os.Getenv("MAGNETIS_PASS")
 	userID := os.Getenv("MAGNETIS_USER_ID")
 	spreadsheetID := os.Getenv("SPREADSHEET_ID")
-	err := magnetis.MagnetisSignin(magnetisUserID, magnetisPassword)
+	err := magnetis.Signin(magnetisUserID, magnetisPassword)
 
 	if err != nil {
 		log.Fatal(err)
