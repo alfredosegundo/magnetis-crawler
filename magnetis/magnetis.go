@@ -97,6 +97,7 @@ var transactionTypes = [...]string{
 
 func (t TransactionType) String() string { return transactionTypes[t] }
 
+// Application represents buy/sell transaction
 type Application struct {
 	Date            time.Time
 	ApplicationDate time.Time
@@ -112,6 +113,7 @@ func (a Application) String() string {
 	return fmt.Sprintf("%v\t%v\t%s\t%s\t%f\t%f\t%f\t%f", a.ApplicationDate, a.Date, a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
 }
 
+// Excel prints the Application type as an spreedshet line separated by tabs.
 func (a Application) Excel() string {
 	return fmt.Sprintf("=DATE(%d,%d,%d)\t%s\t%s\t=%f\t=%f\t=%f\t=%f", a.Date.Year(), a.Date.Month(), a.Date.Day(), a.Investment, a.Type, a.Quantity, a.Price, a.IR, a.Net)
 }
