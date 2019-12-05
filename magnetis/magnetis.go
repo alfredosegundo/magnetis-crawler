@@ -121,8 +121,8 @@ var defaultClient = &http.Client{
 	Jar: jar,
 }
 
-func GetEquityCurve(userId string) (curve *EquityCurve, err error) {
-	uri := host + "/pricing/api/portfolio/" + userId + "/equity_curve"
+func GetEquityCurve(userID string) (curve *EquityCurve, err error) {
+	uri := host + "/pricing/api/portfolio/" + userID + "/equity_curve"
 	log.Println(fmt.Sprintf("Equity curve url: %s", uri))
 	resp, err := defaultClient.Get(uri)
 	if err != nil {
@@ -180,8 +180,8 @@ func Signin(username string, password string) (err error) {
 	return err
 }
 
-func GetInvestmentPlan(userId string) (plan *InvestmentPlan, err error) {
-	resp, err := defaultClient.Get(host + "/api/investment_plan/" + userId)
+func GetInvestmentPlan(userID string) (plan *InvestmentPlan, err error) {
+	resp, err := defaultClient.Get(host + "/api/investment_plan/" + userID)
 	if err != nil {
 		return nil, err
 	}
@@ -198,8 +198,8 @@ func GetInvestmentPlan(userId string) (plan *InvestmentPlan, err error) {
 	return
 }
 
-func Assets(userId string) (assets []Asset, err error) {
-	resp, err := defaultClient.Get(host + "/user_portfolio/api/portfolios/" + userId + "/assets")
+func Assets(userID string) (assets []Asset, err error) {
+	resp, err := defaultClient.Get(host + "/user_portfolio/api/portfolios/" + userID + "/assets")
 	if err != nil {
 		return nil, err
 	}

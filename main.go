@@ -13,10 +13,10 @@ import (
 )
 
 func main() {
-	var userId string
+	var userID string
 	var username string
 	var password string
-	var spreadsheetId string
+	var spreadsheetID string
 	var shouldSave bool
 	var shouldPrint bool
 	var shouldPrintExcel bool
@@ -28,10 +28,10 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:        "userId",
+			Name:        "userID",
 			Aliases:     []string{"U"},
 			Usage:       "Your user id on magnetis api",
-			Destination: &userId,
+			Destination: &userID,
 			EnvVars:     []string{"MAGNETIS_USER_ID"},
 		},
 		&cli.StringFlag{
@@ -52,7 +52,7 @@ func main() {
 			Name:        "spreadsheet, sheet",
 			Aliases:     []string{"sheet"},
 			Usage:       "Your spreadsheet id on google drive",
-			Destination: &spreadsheetId,
+			Destination: &spreadsheetID,
 			EnvVars:     []string{"GOOGLE_SPREADSHEET_ID"},
 		},
 	}
@@ -88,7 +88,7 @@ func main() {
 					log.Fatal(err)
 				}
 
-				curve, err := magnetis.GetEquityCurve(userId)
+				curve, err := magnetis.GetEquityCurve(userID)
 				if err != nil {
 					log.Fatalf("Error retrieving equity curve: %v", err)
 				}
@@ -106,7 +106,7 @@ func main() {
 				}
 				if shouldSave {
 					spreadsheet.SpreadsheetsSignin()
-					err = spreadsheet.UpdateEquityCurve(curve.Equities, spreadsheetId)
+					err = spreadsheet.UpdateEquityCurve(curve.Equities, spreadsheetID)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -137,7 +137,7 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				plan, err := magnetis.GetInvestmentPlan(userId)
+				plan, err := magnetis.GetInvestmentPlan(userID)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -173,7 +173,7 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				assets, err := magnetis.Assets(userId)
+				assets, err := magnetis.Assets(userID)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -233,7 +233,7 @@ func main() {
 				}
 				if shouldSave {
 					spreadsheet.SpreadsheetsSignin()
-					err = spreadsheet.UpdateApplications(applications, spreadsheetId)
+					err = spreadsheet.UpdateApplications(applications, spreadsheetID)
 					if err != nil {
 						log.Fatal(err)
 					}
