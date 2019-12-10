@@ -9,3 +9,4 @@ magnetis-crawler
 magnetis-crawler.zip
 outputfile.txt
 .env
+dist/
