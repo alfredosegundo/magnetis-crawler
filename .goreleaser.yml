@@ -1,10 +1,6 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    # you may remove this if you don't use vgo
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
 - env:
@@ -26,3 +22,27 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
+brews:
+  -
+    name: magnetis_crawler
+
+    github:
+      owner: alfredosegundo
+      name: homebrew-magnetis_crawler
+
+    url_template: "http://github.mycompany.com/alfredosegundo/magnetis_crawler/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    commit_author:
+      name: Alfredo Segundo
+      email: alfredocavalcanti@gmail.com
+
+    folder: Formula
+
+    description: "Crawler of the json api of magnetis.com.br website"
+
+    test: |
+      system "#{bin}/magnetis_crawler --version"
+
+    install: |
+      bin.install "program"
