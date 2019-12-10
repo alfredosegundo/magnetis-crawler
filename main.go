@@ -24,7 +24,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Magnetis Crawler"
 	app.Usage = "Get my data form magnetis website"
-	app.Version = "1.0.2"
+	app.Version = "1.0.3"
 
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
