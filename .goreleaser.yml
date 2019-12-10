@@ -31,7 +31,7 @@ brews:
       owner: alfredosegundo
       name: homebrew-magnetis_crawler
 
-    url_template: "http://github.mycompany.com/alfredosegundo/magnetis_crawler/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url_template: "http://github.com/alfredosegundo/magnetis_crawler/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
     commit_author:
       name: Alfredo Segundo
