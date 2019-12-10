@@ -25,13 +25,13 @@ changelog:
 
 brews:
   -
-    name: magnetis_crawler
+    name: magnetis-crawler
 
     github:
       owner: alfredosegundo
       name: homebrew-magnetis_crawler
 
-    url_template: "http://github.com/alfredosegundo/magnetis_crawler/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/alfredosegundo/magnetis-crawler/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
     commit_author:
       name: Alfredo Segundo
@@ -42,7 +42,7 @@ brews:
     description: "Crawler of the json api of magnetis.com.br website"
 
     test: |
-      system "#{bin}/magnetis_crawler --version"
+      system "#{bin}/magnetis-crawler --version"
 
     install: |
       bin.install "program"
