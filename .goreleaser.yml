@@ -1,0 +1,37 @@
+builds:
+  - binary: magnetis_crawler
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+
+project_name: Magnetis Crawler
+
+brew:
+  # Reporitory to push the tap to.
+  github:
+    owner: alfredosegundo
+    name: homebrew-magnetis_crawler
+
+  # Git author used to commit to the repository.
+  commit_author:
+    name: Alfredo Segundo
+    email: asegundo@thoughtworks.com
+
+  # Folder inside the repository to put the formula.
+  # Default is the root folder.
+  folder: Formula
+
+  description: "Magnetis Crawler"
+
+  # So you can `brew test` your formula.
+  # Default is empty.
+  test: |
+    system "#{bin}/magnetis_crawler -v"
+
+  # Custom install script for brew.
+  # Default is 'bin.install "program"'.
+  install: |
+    bin.install "magnetis_crawler"

@@ -7,3 +7,4 @@ after_success:
  - go build -o magnetis-crawler main.go
  - ./magnetis-crawler curve -s
  - ./magnetis-crawler applications -s
+ - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
