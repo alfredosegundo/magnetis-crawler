@@ -45,4 +45,4 @@ brews:
       system "#{bin}/magnetis-crawler --version"
 
     install: |
-      bin.install "program"
+      bin.install "magnetis-crawler"
