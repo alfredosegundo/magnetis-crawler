@@ -193,3 +193,11 @@ func updateSpreadSheet(values [][]interface{}, spreadsheetID string, valuesRange
 	}
 	return
 }
+
+func GetConfiguredStocks() (stocks []string) {
+	return []string{"VVAR3", "MGLU3"}
+}
+
+func UpdateStocks(stock string, value string) {
+	fmt.Printf("%s: %s\n", stock, value)
+}

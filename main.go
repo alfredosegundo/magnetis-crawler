@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/alfredosegundo/magnetis-crawler/magnetis"
+	"github.com/alfredosegundo/magnetis-crawler/search"
 	"github.com/alfredosegundo/magnetis-crawler/spreadsheet"
 
 	"github.com/urfave/cli/v2"
@@ -59,6 +60,50 @@ func main() {
 
 	app.Commands = []*cli.Command{
 		{
+			Name:    "stocks",
+			Aliases: []string{"s"},
+			Usage:   "Update stocks table",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:        "save",
+					Aliases:     []string{"s"},
+					Usage:       "if we should save on drive",
+					Destination: &shouldSave,
+				},
+				&cli.BoolFlag{
+					Name:        "print",
+					Aliases:     []string{"p"},
+					Usage:       "Print on the console",
+					Destination: &shouldPrint,
+				},
+				&cli.BoolFlag{
+					Name:        "excel",
+					Aliases:     []string{"e"},
+					Usage:       "Print on the console as tab separated execel formated values",
+					Destination: &shouldPrintExcel,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if shouldSave {
+					spreadsheet.SpreadsheetsSignin()
+					stocks := spreadsheet.GetConfiguredStocks()
+					for _, stock := range stocks {
+						value := search.GetStockValue(stock)
+						spreadsheet.UpdateStocks(stock, value)
+					}
+				}
+
+				if shouldPrint {
+					spreadsheet.SpreadsheetsSignin()
+					stocks := spreadsheet.GetConfiguredStocks()
+					for _, stock := range stocks {
+						value := search.GetStockValue(stock)
+						fmt.Printf("%s: %s\n", stock, value)
+					}
+				}
+				return nil
+			},
+		}, {
 			Name:    "curve",
 			Aliases: []string{"c"},
 			Usage:   "Get your equity curve from magnetis api",

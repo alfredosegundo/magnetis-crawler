@@ -10,3 +10,5 @@ magnetis-crawler.zip
 outputfile.txt
 .env
 dist/
+.vscode/
+exports.sh
