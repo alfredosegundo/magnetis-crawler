@@ -7,6 +7,7 @@ after_success:
  - go build -o magnetis-crawler main.go
  - ./magnetis-crawler curve -s
  - ./magnetis-crawler applications -s
+ - ./magnetis-crawler stocks -s
 
 deploy:
 - provider: script
