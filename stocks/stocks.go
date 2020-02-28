@@ -1,11 +1,9 @@
-package search
+package stocks
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
-	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -36,11 +34,4 @@ func GetStockValue(stockCode string) (stockValue string) {
 	})
 
 	return stockValue
-}
-
-func main() {
-	if len(os.Args) <= 1 {
-		log.Fatal("You must provide at least one argument.")
-	}
-	fmt.Println(GetStockValue(os.Args[1]))
 }

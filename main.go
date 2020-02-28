@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/alfredosegundo/magnetis-crawler/magnetis"
-	"github.com/alfredosegundo/magnetis-crawler/search"
 	"github.com/alfredosegundo/magnetis-crawler/spreadsheet"
+	"github.com/alfredosegundo/magnetis-crawler/stocks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -88,7 +88,7 @@ func main() {
 					spreadsheet.SpreadsheetsSignin()
 					stocks := spreadsheet.GetConfiguredStocks()
 					for _, stock := range stocks {
-						value := search.GetStockValue(stock)
+						value := stocks.GetStockValue(stock)
 						spreadsheet.UpdateStocks(stock, value)
 					}
 				}
@@ -97,7 +97,7 @@ func main() {
 					spreadsheet.SpreadsheetsSignin()
 					stocks := spreadsheet.GetConfiguredStocks()
 					for _, stock := range stocks {
-						value := search.GetStockValue(stock)
+						value := stocks.GetStockValue(stock)
 						fmt.Printf("%s: %s\n", stock, value)
 					}
 				}
