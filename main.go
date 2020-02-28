@@ -86,19 +86,19 @@ func main() {
 			Action: func(c *cli.Context) error {
 				if shouldSave {
 					spreadsheet.SpreadsheetsSignin()
-					stocks := spreadsheet.GetConfiguredStocks()
-					for _, stock := range stocks {
-						value := stocks.GetStockValue(stock)
-						spreadsheet.UpdateStocks(stock, value)
+					codes := spreadsheet.GetConfiguredStocks()
+					for _, code := range codes {
+						value := stocks.GetStockValue(code)
+						spreadsheet.UpdateStocks(code, value)
 					}
 				}
 
 				if shouldPrint {
 					spreadsheet.SpreadsheetsSignin()
-					stocks := spreadsheet.GetConfiguredStocks()
-					for _, stock := range stocks {
-						value := stocks.GetStockValue(stock)
-						fmt.Printf("%s: %s\n", stock, value)
+					codes := spreadsheet.GetConfiguredStocks()
+					for _, code := range codes {
+						value := stocks.GetStockValue(code)
+						fmt.Printf("%s: %s\n", code, value)
 					}
 				}
 				return nil
